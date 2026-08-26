@@ -1,0 +1,2896 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
+        />
+        <title>Jaba9 - Betting Platform</title>
+        <link rel="stylesheet" href="/vendor/static-shell.css" />
+        <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css" />
+        <style>
+            /* ── Reset & Base ── */
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family:
+                    'Inter',
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    'Segoe UI',
+                    Roboto,
+                    sans-serif;
+                background: #0a0a12;
+                color: #e8e6f0;
+                -webkit-font-smoothing: antialiased;
+                overflow-x: hidden;
+                min-height: 100vh;
+                padding-bottom: 80px;
+            }
+            ::-webkit-scrollbar {
+                width: 4px;
+                height: 4px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #14141f;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #f5b81b;
+                border-radius: 20px;
+            }
+
+            /* ── Color Variables ── */
+            :root {
+                --gold: #f5b81b;
+                --gold-light: #fdd835;
+                --gold-dark: #d4910f;
+                --gold-glow: rgba(245, 184, 27, 0.2);
+                --gold-glow-strong: rgba(245, 184, 27, 0.35);
+
+                --bg-body: #0a0a12;
+                --bg-card: rgba(18, 18, 32, 0.75);
+                --bg-glass: rgba(18, 18, 32, 0.85);
+                --bg-header: rgba(10, 10, 18, 0.92);
+                --bg-sidebar: rgba(10, 10, 18, 0.98);
+                --bg-input: rgba(255, 255, 255, 0.04);
+                --bg-bottom-bar: rgba(10, 10, 18, 0.92);
+                --bg-modal: rgba(18, 18, 32, 0.92);
+
+                --text-primary: #e8e6f0;
+                --text-secondary: #b8b0d0;
+                --text-muted: #6a6a8a;
+                --text-inverse: #0a0a12;
+
+                --border-color: rgba(245, 184, 27, 0.08);
+                --border-light: rgba(255, 255, 255, 0.04);
+                --border-card: rgba(245, 184, 27, 0.06);
+
+                --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+                --shadow-hover: 0 8px 40px rgba(245, 184, 27, 0.06);
+                --shadow-dropdown: 0 20px 60px rgba(0, 0, 0, 0.5);
+
+                --badge-bg: rgba(245, 184, 27, 0.08);
+                --badge-text: #f5b81b;
+
+                --slider-bg: linear-gradient(
+                    135deg,
+                    rgba(245, 184, 27, 0.06),
+                    rgba(212, 145, 15, 0.02)
+                );
+                --slider-border: rgba(245, 184, 27, 0.06);
+
+                --live-dot: #f5b81b;
+                --modal-overlay: rgba(0, 0, 0, 0.7);
+                --footer-border: rgba(255, 255, 255, 0.04);
+
+                --card-radius: 16px;
+                --btn-radius: 12px;
+
+                --gradient-gold: linear-gradient(135deg, #f5b81b, #d4910f);
+                --gradient-gold-reverse: linear-gradient(135deg, #d4910f, #f5b81b);
+            }
+
+            /* ── Glass & Cards ── */
+            .glass {
+                background: var(--bg-card);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                border: 1px solid var(--border-card);
+                box-shadow: var(--shadow-card);
+                transition:
+                    border-color 0.3s ease,
+                    box-shadow 0.3s ease;
+                border-radius: var(--card-radius);
+            }
+            .glass-hover {
+                transition:
+                    border-color 0.3s ease,
+                    box-shadow 0.3s ease,
+                    transform 0.25s ease;
+            }
+            .glass-hover:hover {
+                border-color: rgba(245, 184, 27, 0.25);
+                box-shadow: var(--shadow-hover);
+            }
+            .card-glow {
+                position: relative;
+            }
+            .card-glow::before {
+                content: '';
+                position: absolute;
+                inset: -1px;
+                border-radius: inherit;
+                padding: 1px;
+                background: linear-gradient(135deg, rgba(245, 184, 27, 0.08), transparent 70%);
+                -webkit-mask:
+                    linear-gradient(#fff 0 0) content-box,
+                    linear-gradient(#fff 0 0);
+                mask:
+                    linear-gradient(#fff 0 0) content-box,
+                    linear-gradient(#fff 0 0);
+                -webkit-mask-composite: xor;
+                mask-composite: exclude;
+                pointer-events: none;
+            }
+
+            /* ── Badges ── */
+            .badge-gold {
+                background: var(--badge-bg);
+                color: var(--badge-text);
+                padding: 2px 12px;
+                border-radius: 100px;
+                font-size: 8px;
+                font-weight: 700;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+                border: 1px solid rgba(245, 184, 27, 0.1);
+            }
+            .badge-filled {
+                background: var(--gradient-gold);
+                color: #0a0a12;
+                padding: 2px 12px;
+                border-radius: 100px;
+                font-size: 8px;
+                font-weight: 700;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+            }
+            .badge-live {
+                background: rgba(245, 184, 27, 0.12);
+                color: #f5b81b;
+                padding: 2px 10px;
+                border-radius: 100px;
+                font-size: 7px;
+                font-weight: 700;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+                border: 1px solid rgba(245, 184, 27, 0.1);
+                animation: pulse-live 1.8s ease-in-out infinite;
+            }
+            @keyframes pulse-live {
+                0%,
+                100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.4;
+                }
+            }
+
+            /* ── Glow ── */
+            .glow-gold {
+                text-shadow: 0 0 40px rgba(245, 184, 27, 0.2);
+            }
+            .glow-gold-strong {
+                text-shadow: 0 0 60px rgba(245, 184, 27, 0.3);
+            }
+
+            /* ── Buttons ── */
+            .btn-primary {
+                background: var(--gradient-gold);
+                color: #0a0a12;
+                font-weight: 700;
+                padding: 10px 20px;
+                border-radius: var(--btn-radius);
+                border: none;
+                cursor: pointer;
+                transition:
+                    transform 0.2s ease,
+                    box-shadow 0.3s ease;
+                font-family: 'Inter', sans-serif;
+                font-size: 13px;
+            }
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 30px rgba(245, 184, 27, 0.25);
+            }
+            .btn-primary:active {
+                transform: scale(0.97);
+            }
+            .btn-outline {
+                background: transparent;
+                color: #f5b81b;
+                font-weight: 600;
+                padding: 9px 18px;
+                border-radius: var(--btn-radius);
+                border: 1px solid rgba(245, 184, 27, 0.2);
+                cursor: pointer;
+                transition: all 0.25s ease;
+                font-family: 'Inter', sans-serif;
+                font-size: 13px;
+            }
+            .btn-outline:hover {
+                background: rgba(245, 184, 27, 0.06);
+                border-color: rgba(245, 184, 27, 0.4);
+            }
+
+            /* ── Inputs ── */
+            .input-gold {
+                background: var(--bg-input);
+                border: 1px solid var(--border-light);
+                color: var(--text-primary);
+                transition:
+                    border-color 0.25s ease,
+                    box-shadow 0.25s ease;
+                padding: 12px 16px;
+                border-radius: 12px;
+                width: 100%;
+                font-size: 14px;
+                font-family: 'Inter', sans-serif;
+            }
+            .input-gold:focus {
+                outline: none;
+                border-color: rgba(245, 184, 27, 0.4);
+                box-shadow: 0 0 0 3px rgba(245, 184, 27, 0.06);
+            }
+            .input-gold::placeholder {
+                color: var(--text-muted);
+            }
+            .floating-field {
+                position: relative;
+            }
+            .floating-field > label {
+                position: absolute;
+                z-index: 1;
+                top: -7px;
+                left: 12px;
+                padding: 0 5px;
+                background: #121220;
+                color: var(--text-secondary);
+                font-size: 11px;
+                line-height: 14px;
+                pointer-events: none;
+            }
+            .floating-field .input-gold {
+                padding-top: 14px;
+            }
+            .floating-field .password-input {
+                padding-right: 46px;
+            }
+            .password-toggle {
+                position: absolute;
+                right: 4px;
+                top: 50%;
+                width: 40px;
+                height: 40px;
+                transform: translateY(-50%);
+                color: var(--text-muted);
+                border-radius: 10px;
+            }
+            .password-toggle:hover,
+            .password-toggle:focus-visible {
+                color: #f5b81b;
+                outline: none;
+            }
+            .submit-spinner {
+                display: inline-block;
+                width: 16px;
+                height: 16px;
+                margin-right: 8px;
+                vertical-align: -3px;
+                border: 2px solid rgba(10, 10, 20, 0.28);
+                border-top-color: currentColor;
+                border-radius: 999px;
+                animation: submitSpin 0.7s linear infinite;
+            }
+            .btn-primary:disabled {
+                cursor: wait;
+                opacity: 0.78;
+            }
+            @keyframes submitSpin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .submit-spinner {
+                    animation-duration: 1.4s;
+                }
+            }
+
+            /* ── Divider ── */
+            .divider-glow {
+                height: 1px;
+                background: linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(245, 184, 27, 0.08),
+                    transparent
+                );
+            }
+
+            /* ── MODALS ── */
+            .modal-overlay {
+                background: var(--modal-overlay);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                animation: fadeIn 0.25s ease;
+            }
+            .modal-content {
+                animation: slideUp 0.3s ease;
+                max-height: 90vh;
+                overflow-y: auto;
+                background: var(--bg-modal);
+                border: 1px solid var(--border-card);
+                border-right: 0;
+                border-bottom: 0;
+                box-shadow: var(--shadow-dropdown);
+            }
+            .modal-content.card-glow::before {
+                display: none;
+            }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+            @keyframes slideUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px) scale(0.96);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+
+            /* ── Profile Dropdown ── */
+            .profile-dropdown {
+                background: var(--bg-card);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                border: 1px solid var(--border-color);
+                border-radius: 16px;
+                box-shadow: var(--shadow-dropdown);
+                animation: slideUp 0.2s ease;
+                min-width: 200px;
+            }
+            .profile-dropdown-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 16px;
+                border-radius: 8px;
+                color: var(--text-secondary);
+                transition: all 0.15s ease;
+                cursor: pointer;
+                font-size: 13px;
+                font-weight: 500;
+            }
+            .profile-dropdown-item:hover {
+                background: rgba(245, 184, 27, 0.08);
+                color: var(--text-primary);
+            }
+            .profile-dropdown-item i {
+                width: 18px;
+                text-align: center;
+                color: rgba(245, 184, 27, 0.5);
+            }
+
+            /* ── Avatar ── */
+            .avatar-ring {
+                border: 2px solid rgba(245, 184, 27, 0.2);
+                box-shadow: 0 0 40px rgba(245, 184, 27, 0.04);
+                transition:
+                    border-color 0.3s ease,
+                    box-shadow 0.3s ease;
+            }
+            .avatar-ring:hover {
+                border-color: rgba(245, 184, 27, 0.4);
+                box-shadow: 0 0 50px rgba(245, 184, 27, 0.08);
+            }
+
+            /* ── Language Options ── */
+            .lang-option {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 16px;
+                border-radius: 12px;
+                cursor: pointer;
+                transition: background 0.2s ease;
+                border: 1px solid transparent;
+            }
+            .lang-option:hover {
+                background: rgba(245, 184, 27, 0.06);
+                border-color: rgba(245, 184, 27, 0.06);
+            }
+            .lang-option.active {
+                background: rgba(245, 184, 27, 0.08);
+                border-color: rgba(245, 184, 27, 0.15);
+            }
+            .lang-option.active .lang-check {
+                opacity: 1;
+            }
+            .lang-check {
+                opacity: 0;
+                transition: opacity 0.2s ease;
+                color: #f5b81b;
+            }
+
+            /* ── Slider ── */
+            .slider-container {
+                overflow: hidden;
+                position: relative;
+                border-radius: 16px;
+            }
+            .slider-track {
+                display: flex;
+                transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                will-change: transform;
+            }
+            .slider-track .slide {
+                min-width: 100%;
+                padding: 28px 24px;
+                background: var(--slider-bg);
+                border-radius: 16px;
+                border: 1px solid var(--slider-border);
+            }
+            .slider-dots {
+                display: flex;
+                justify-content: center;
+                gap: 6px;
+                margin-top: 12px;
+            }
+            .slider-dots span {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.12);
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            .slider-dots span.active {
+                background: #f5b81b;
+                width: 24px;
+                border-radius: 4px;
+            }
+
+            /* ── Game Category Scroll ── */
+            .category-scroll {
+                display: flex;
+                gap: 10px;
+                overflow-x: auto;
+                padding: 2px 0 8px 0;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            .category-scroll::-webkit-scrollbar {
+                display: none;
+            }
+            .category-scroll .cat-item {
+                flex-shrink: 0;
+                scroll-snap-align: start;
+                padding: 6px 16px;
+                border-radius: 30px;
+                font-size: 11px;
+                font-weight: 600;
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid var(--border-light);
+                color: var(--text-secondary);
+                cursor: pointer;
+                transition: all 0.25s ease;
+                white-space: nowrap;
+            }
+            .category-scroll .cat-item.active {
+                background: var(--gradient-gold);
+                color: #0a0a12;
+                border-color: #f5b81b;
+                box-shadow: 0 4px 20px rgba(245, 184, 27, 0.15);
+            }
+            .category-scroll .cat-item:hover {
+                border-color: rgba(245, 184, 27, 0.3);
+                color: var(--text-primary);
+            }
+
+            /* Category/provider mega menu stays flat and uses the system palette. */
+            .catalogue-menu {
+                position: relative;
+            }
+            .provider-mega {
+                display: none;
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+                gap: 1px;
+                margin-top: 8px;
+                padding: 1px;
+                background: var(--border-light);
+                border: 0;
+            }
+            .provider-mega.open {
+                display: grid;
+            }
+            .provider-mega button {
+                min-height: 42px;
+                padding: 9px 12px;
+                border: 0;
+                border-radius: 0;
+                background: var(--bg-card);
+                color: var(--text-secondary);
+                font-size: 11px;
+                font-weight: 600;
+                text-align: left;
+                cursor: pointer;
+            }
+            .provider-mega button:hover,
+            .provider-mega button:focus-visible,
+            .provider-mega button.active {
+                background: color-mix(in srgb, var(--gold) 18%, var(--bg-card));
+                color: var(--text-primary);
+                outline: 0;
+            }
+            .catalogue-empty {
+                grid-column: 1 / -1;
+                padding: 14px;
+                background: var(--bg-card);
+                color: var(--text-muted);
+                font-size: 11px;
+                text-align: center;
+            }
+            @media (max-width: 767px) {
+                .provider-mega {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+            }
+
+            /* ── Game Cards ── */
+            .game-card {
+                background: var(--bg-card);
+                border-radius: 12px;
+                overflow: hidden;
+                border: 1px solid var(--border-light);
+                transition: all 0.3s ease;
+                cursor: pointer;
+                box-shadow: var(--shadow-card);
+            }
+            .game-card:hover {
+                transform: translateY(-4px);
+                border-color: rgba(245, 184, 27, 0.2);
+                box-shadow: var(--shadow-hover);
+            }
+            .game-card img {
+                width: 100%;
+                height: 100px;
+                object-fit: cover;
+                display: block;
+            }
+            .game-card .game-name {
+                padding: 8px 10px;
+                font-size: 10px;
+                font-weight: 600;
+                color: var(--text-primary);
+                text-align: center;
+                background: rgba(255, 255, 255, 0.02);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            /* ── Live Score Card ── */
+            .live-score-card {
+                background: var(--bg-card);
+                border-radius: 14px;
+                padding: 14px 16px;
+                border: 1px solid var(--border-color);
+                box-shadow: var(--shadow-card);
+                transition: border-color 0.3s ease;
+            }
+            .live-score-card .match-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 9px;
+                color: var(--text-secondary);
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            .live-score-card .match-teams {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0 4px 0;
+            }
+            .live-score-card .team {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .live-score-card .team .team-name {
+                font-weight: 700;
+                font-size: 13px;
+                color: var(--text-primary);
+            }
+            .live-score-card .team .team-score {
+                font-weight: 800;
+                font-size: 18px;
+                color: var(--text-primary);
+                letter-spacing: -0.5px;
+            }
+            .live-score-card .team .team-flag {
+                font-size: 20px;
+            }
+            .live-score-card .match-status {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 6px;
+                border-top: 1px solid var(--border-light);
+                font-size: 10px;
+                color: var(--text-secondary);
+            }
+            .live-score-card .match-status .live-dot {
+                display: inline-block;
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: #f5b81b;
+                animation: pulse-live 1.4s ease-in-out infinite;
+                margin-right: 6px;
+            }
+
+            /* ── Bottom App Bar ── */
+            .bottom-app-bar {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: var(--bg-bottom-bar);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                border-top: 1px solid var(--border-light);
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                padding: 6px 0 env(safe-area-inset-bottom, 6px) 0;
+                z-index: 100;
+                height: 64px;
+            }
+            .bottom-app-bar .bar-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 1px;
+                color: var(--text-muted);
+                transition: all 0.25s ease;
+                cursor: pointer;
+                padding: 4px 12px;
+                border-radius: 8px;
+                font-size: 8px;
+                font-weight: 600;
+                position: relative;
+                border: none;
+                background: transparent;
+                font-family: 'Inter', sans-serif;
+            }
+            .bottom-app-bar .bar-item i {
+                font-size: 16px;
+                transition: all 0.25s ease;
+            }
+            .bottom-app-bar .bar-item.active {
+                color: #f5b81b;
+            }
+            .bottom-app-bar .bar-item.active i {
+                transform: translateY(-2px);
+            }
+            .bottom-app-bar .bar-item .badge-dot {
+                position: absolute;
+                top: 2px;
+                right: 4px;
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: #f5b81b;
+            }
+            .bottom-app-bar .bar-item:hover {
+                color: var(--text-primary);
+            }
+
+            /* ── Sidebar Menu ── */
+            .sidebar-overlay {
+                background: var(--modal-overlay);
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+                animation: fadeIn 0.25s ease;
+            }
+            .sidebar {
+                background: var(--bg-sidebar);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                border-right: 1px solid var(--border-color);
+                animation: slideRight 0.3s ease;
+                width: 280px;
+                max-width: 80vw;
+            }
+            @keyframes slideRight {
+                from {
+                    transform: translateX(-100%);
+                }
+                to {
+                    transform: translateX(0);
+                }
+            }
+            .sidebar-item {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                padding: 12px 20px;
+                border-radius: 10px;
+                color: var(--text-secondary);
+                transition: all 0.2s ease;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 500;
+            }
+            .sidebar-item:hover {
+                background: rgba(245, 184, 27, 0.08);
+                color: var(--text-primary);
+            }
+            .sidebar-item i {
+                width: 20px;
+                text-align: center;
+                color: rgba(245, 184, 27, 0.4);
+            }
+            .sidebar-item.active {
+                color: #f5b81b;
+                background: rgba(245, 184, 27, 0.08);
+            }
+            .sidebar-item.active i {
+                color: #f5b81b;
+            }
+
+            /* ── Header ── */
+            .header-glass {
+                background: var(--bg-header);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                border-bottom: 1px solid var(--border-light);
+                position: sticky;
+                top: 0;
+                z-index: 50;
+                border-radius: 14px;
+                padding: 10px 16px;
+            }
+            .logo-text {
+                font-size: 20px;
+                font-weight: 900;
+                letter-spacing: -0.5px;
+                color: #f5b81b;
+            }
+            .site-logo-image {
+                display: block;
+                width: auto;
+                height: 32px;
+                max-width: 150px;
+                object-fit: contain;
+            }
+
+            /* ── Section Title ── */
+            .section-title {
+                font-size: 15px;
+                font-weight: 700;
+                color: var(--text-primary);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .section-title .bar {
+                width: 3px;
+                height: 18px;
+                border-radius: 4px;
+                background: var(--gradient-gold);
+            }
+            .see-all {
+                font-size: 11px;
+                color: var(--text-secondary);
+                font-weight: 600;
+                cursor: pointer;
+                transition: color 0.2s;
+            }
+            .see-all:hover {
+                color: #f5b81b;
+            }
+
+            /* ── Desktop Only / Mobile Only ── */
+            .desktop-only {
+                display: none !important;
+            }
+            .mobile-only {
+                display: flex !important;
+            }
+            @media (min-width: 1024px) {
+                .desktop-only {
+                    display: flex !important;
+                }
+                .mobile-only {
+                    display: none !important;
+                }
+                body {
+                    padding-bottom: 0;
+                }
+                .bottom-app-bar {
+                    display: none !important;
+                }
+                .game-card img {
+                    height: 120px;
+                }
+            }
+
+            /* ── Live Scores Grid ── */
+            .live-grid {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            @media (min-width: 1024px) {
+                .live-grid {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+            }
+
+            /* ── Footer ── */
+            .footer-glow {
+                border-top: 1px solid var(--footer-border);
+                background: var(--bg-card);
+                backdrop-filter: blur(6px);
+                -webkit-backdrop-filter: blur(6px);
+                border-radius: 14px;
+                padding: 20px 18px;
+            }
+            .footer-glow .footer-link {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                color: var(--text-secondary);
+                transition: color 0.2s ease;
+                font-size: 12px;
+                font-weight: 500;
+                padding: 6px 0;
+                text-decoration: none;
+            }
+            .footer-glow .footer-link:hover {
+                color: #f5b81b;
+            }
+            .footer-glow .footer-link i {
+                width: 18px;
+                text-align: center;
+                color: rgba(245, 184, 27, 0.4);
+            }
+            .footer-glow .footer-heading {
+                color: var(--text-muted);
+                font-size: 9px;
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+                font-weight: 600;
+            }
+            .footer-glow .footer-bottom {
+                border-top: 1px solid var(--footer-border);
+                padding-top: 14px;
+                margin-top: 4px;
+                font-size: 10px;
+                color: var(--text-muted);
+            }
+
+            /* ── Hero Slide ── */
+            .hero-slide h2 {
+                font-size: 1.2rem;
+                font-weight: 800;
+            }
+            @media (min-width: 640px) {
+                .hero-slide h2 {
+                    font-size: 1.6rem;
+                }
+            }
+            .hero-slide .sub-text {
+                color: var(--text-secondary);
+                font-size: 13px;
+                margin-top: 4px;
+            }
+
+            /* ── Responsive tweaks ── */
+            @media (max-width: 480px) {
+                .game-card img {
+                    height: 80px;
+                }
+                .game-card .game-name {
+                    font-size: 9px;
+                    padding: 6px 8px;
+                }
+                .live-score-card .team .team-name {
+                    font-size: 11px;
+                }
+                .live-score-card .team .team-score {
+                    font-size: 15px;
+                }
+                .live-score-card .team .team-flag {
+                    font-size: 16px;
+                }
+                .hero-slide h2 {
+                    font-size: 1rem;
+                }
+                .hero-slide .sub-text {
+                    font-size: 11px;
+                }
+            }
+
+            /* ── Gujarati Text ── */
+            .gujarati-text {
+                font-family: 'Inter', sans-serif;
+                letter-spacing: 0.02em;
+                line-height: 1.6;
+            }
+
+            /* ── Ambassador Avatar ── */
+            .ambassador-avatar {
+                width: 68px;
+                height: 68px;
+                border-radius: 50%;
+                background: var(--gradient-gold);
+                border: 2px solid rgba(245, 184, 27, 0.3);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 26px;
+                font-weight: 800;
+                color: #0a0a12;
+                box-shadow: 0 0 40px rgba(245, 184, 27, 0.05);
+                flex-shrink: 0;
+                transition:
+                    transform 0.3s ease,
+                    box-shadow 0.3s ease;
+            }
+            .ambassador-avatar:hover {
+                transform: scale(1.05);
+                box-shadow: 0 0 50px rgba(245, 184, 27, 0.12);
+            }
+
+            /* ── Tab underline ── */
+            .tab-active {
+                color: #f5b81b;
+                position: relative;
+            }
+            .tab-active::after {
+                content: '';
+                position: absolute;
+                bottom: -3px;
+                left: 0;
+                width: 100%;
+                height: 2.5px;
+                background: var(--gradient-gold);
+                border-radius: 4px;
+            }
+
+            @media (max-width: 480px) {
+                .ambassador-avatar {
+                    width: 56px;
+                    height: 56px;
+                    font-size: 20px;
+                }
+            }
+
+            /* ── Flat visual system ── */
+            *,
+            *::before,
+            *::after {
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+            }
+
+            body {
+                background: #08090d;
+                line-height: 1.5;
+            }
+
+            body > .max-w-7xl {
+                width: min(100%, 1280px);
+                padding-top: 18px;
+            }
+
+            .glass,
+            .header-glass,
+            .live-score-card,
+            .game-card,
+            .profile-dropdown,
+            .modal-content {
+                background: #101218;
+                border: 1px solid #242833;
+            }
+
+            .glass-hover:hover,
+            .game-card:hover,
+            .live-score-card:hover {
+                border-color: var(--gold);
+                transform: translateY(-2px);
+            }
+
+            .card-glow::before {
+                display: none;
+            }
+
+            .header-glass {
+                min-height: 64px;
+                padding: 10px 14px;
+                border: 0;
+                background: rgba(16, 18, 24, 0.96);
+                position: fixed;
+                top: 0;
+                left: 50%;
+                z-index: 180;
+                width: min(calc(100% - 48px), 1232px);
+                transform: translateX(-50%);
+                backdrop-filter: blur(10px);
+            }
+
+            body > .max-w-7xl {
+                padding-top: 86px;
+            }
+
+            .header-glass nav a {
+                display: inline-flex;
+                min-height: 38px;
+                align-items: center;
+                padding: 0 12px;
+                border: 0;
+            }
+
+            .header-glass nav a:hover,
+            .header-glass nav a:focus-visible {
+                color: var(--gold);
+            }
+
+            .header-glass *,
+            .header-glass *::before,
+            .header-glass *::after {
+                border-color: transparent !important;
+            }
+
+            .header-glass {
+                display: block;
+                min-height: 114px;
+                padding: 0;
+                width: 100%;
+                max-width: none;
+                background: transparent;
+                backdrop-filter: none;
+            }
+            .header-top {
+                min-height: 70px;
+                background: color-mix(in srgb, var(--gold-dark) 86%, var(--gold) 14%);
+                color: #fff;
+            }
+            .header-top-inner,
+            .header-nav-inner {
+                width: min(100%, 1232px);
+                height: 100%;
+                margin-inline: auto;
+                padding-inline: 16px;
+            }
+            .header-top-inner {
+                display: flex;
+                min-height: 70px;
+                align-items: center;
+                justify-content: space-between;
+                gap: 24px;
+            }
+            .header-brand {
+                display: inline-flex;
+                min-width: 150px;
+                align-items: center;
+            }
+            .header-brand .site-logo-image {
+                height: 44px;
+                max-width: 190px;
+            }
+            .header-actions {
+                display: flex;
+                align-items: center;
+                gap: 18px;
+            }
+            .header-auth-button {
+                display: inline-grid;
+                min-width: 120px;
+                min-height: 38px;
+                place-items: center;
+                padding: 8px 20px;
+                background: color-mix(in srgb, var(--gold-dark) 72%, #fff 8%);
+                color: #fff;
+                font-size: 13px;
+                font-weight: 700;
+            }
+            .header-auth-button.primary {
+                background: color-mix(in srgb, var(--gold) 88%, #fff 12%);
+                color: #08090d;
+            }
+            .header-auth-button:hover,
+            .header-auth-button:focus-visible {
+                background: #fff;
+                color: color-mix(in srgb, var(--gold-dark) 88%, #000 12%);
+            }
+            .header-language {
+                display: inline-flex;
+                min-height: 38px;
+                align-items: center;
+                gap: 7px;
+                padding-inline: 4px;
+                color: #fff;
+                font-size: 12px;
+                font-weight: 700;
+            }
+            .header-language-dot {
+                width: 18px;
+                height: 18px;
+                background: #0a9f55;
+                outline: 3px solid rgba(255, 255, 255, 0.16);
+                outline-offset: -3px;
+            }
+            .header-nav {
+                min-height: 44px;
+                background: color-mix(in srgb, var(--gold) 90%, var(--gold-dark) 10%);
+                color: #08090d;
+            }
+            .header-nav-inner {
+                display: flex;
+                min-height: 44px;
+                align-items: stretch;
+                overflow-x: auto;
+                scrollbar-width: none;
+            }
+            .header-nav-inner::-webkit-scrollbar {
+                display: none;
+            }
+            .header-nav a,
+            .header-menu-button {
+                display: inline-flex;
+                min-height: 44px;
+                flex: 0 0 auto;
+                align-items: center;
+                gap: 7px;
+                padding: 0 16px;
+                color: #08090d;
+                font-size: 12px;
+                font-weight: 800;
+                letter-spacing: 0.02em;
+                white-space: nowrap;
+            }
+            .header-nav a:hover,
+            .header-nav a:focus-visible,
+            .header-menu-button:hover,
+            .header-menu-button:focus-visible,
+            .header-nav a.active {
+                background: rgba(8, 9, 13, 0.14);
+                color: #08090d;
+            }
+            .header-new-badge {
+                display: inline-grid;
+                min-width: 32px;
+                min-height: 24px;
+                place-items: center;
+                padding: 2px 5px;
+                background: #0aa84f;
+                color: #fff;
+                font-size: 8px;
+                font-weight: 900;
+            }
+
+            .header-glass a,
+            .header-glass button,
+            .header-glass .header-auth-button,
+            .header-glass .header-auth-button.primary,
+            .header-glass .header-new-badge {
+                background: transparent !important;
+            }
+
+            .header-glass a,
+            .header-glass button,
+            .header-glass .header-language,
+            .legacy-header a,
+            .legacy-header button {
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                line-height: 1;
+            }
+
+            .header-glass i,
+            .legacy-header i {
+                display: block;
+                line-height: 1;
+                vertical-align: middle;
+            }
+
+            .header-glass a:hover,
+            .header-glass a:focus-visible,
+            .header-glass button:hover,
+            .header-glass button:focus-visible {
+                background: transparent !important;
+                color: color-mix(in srgb, currentColor 72%, #fff 28%);
+                opacity: 0.82;
+            }
+
+            .header-glass .header-new-badge {
+                min-width: auto;
+                min-height: auto;
+                padding: 0;
+                color: #fff;
+            }
+            body > .max-w-7xl {
+                padding-top: 132px;
+            }
+
+            .legacy-header {
+                display: none;
+            }
+
+            .header-glass {
+                position: fixed !important;
+                inset: 0 0 auto 0 !important;
+                z-index: 180;
+                width: 100% !important;
+                margin: 0 !important;
+                transform: none !important;
+            }
+
+            .logo-text {
+                display: inline-flex;
+                align-items: center;
+                min-height: 36px;
+            }
+
+            button,
+            .btn-primary,
+            .btn-outline,
+            .cat-item,
+            .see-all,
+            .profile-dropdown-item,
+            a {
+                transition:
+                    color 160ms ease,
+                    background-color 160ms ease,
+                    border-color 160ms ease,
+                    transform 160ms ease;
+            }
+
+            button,
+            .btn-primary,
+            .btn-outline,
+            .cat-item {
+                min-height: 40px;
+            }
+
+            .btn-primary {
+                background: var(--gold);
+                color: #08090d;
+                border: 1px solid var(--gold);
+                padding-inline: 20px;
+            }
+
+            .btn-primary:hover {
+                background: transparent;
+                color: var(--gold);
+                transform: translateY(-1px);
+            }
+
+            .btn-outline {
+                border-color: #3a3f4d;
+                color: var(--text-primary);
+            }
+
+            .btn-outline:hover {
+                background: #171a22;
+                border-color: var(--gold);
+                color: var(--gold);
+            }
+
+            button:focus-visible,
+            a:focus-visible,
+            input:focus-visible,
+            select:focus-visible,
+            textarea:focus-visible,
+            [tabindex]:focus-visible {
+                outline: 2px solid var(--gold);
+                outline-offset: 3px;
+            }
+
+            .input-gold,
+            input,
+            select,
+            textarea {
+                border-color: #343946;
+                background: #0b0d12;
+            }
+
+            .input-gold:focus,
+            input:focus,
+            select:focus,
+            textarea:focus {
+                border-color: var(--gold);
+            }
+
+            section.glass {
+                padding: clamp(14px, 2vw, 22px) !important;
+                border-left: 3px solid #343946;
+            }
+
+            section.glass:hover {
+                border-left-color: var(--gold);
+            }
+
+            .section-title {
+                gap: 10px;
+                font-size: 14px;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+            }
+
+            .section-title .bar {
+                width: 3px;
+                height: 18px;
+                background: var(--gold);
+            }
+
+            .see-all {
+                display: inline-flex;
+                min-height: 36px;
+                align-items: center;
+                gap: 7px;
+                padding: 0 10px;
+                border-bottom: 1px solid #343946;
+            }
+
+            .see-all:hover {
+                color: var(--gold);
+                border-bottom-color: var(--gold);
+            }
+
+            .category-scroll {
+                gap: 8px;
+                padding-bottom: 8px;
+            }
+
+            .cat-item {
+                background: #101218;
+                border: 1px solid #2d323e;
+                padding: 9px 15px;
+            }
+
+            .cat-item:hover,
+            .cat-item.active {
+                background: #181b23;
+                border-color: var(--gold);
+                color: var(--gold);
+            }
+
+            #gameGrid {
+                gap: 12px;
+            }
+
+            .game-card {
+                overflow: hidden;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #2d323e;
+            }
+
+            .game-card:hover {
+                border-bottom-color: var(--gold);
+            }
+
+            .game-card img {
+                width: 100%;
+                aspect-ratio: 4 / 3;
+                object-fit: cover;
+                border-bottom: 1px solid #2d323e;
+            }
+
+            .game-name {
+                padding: 10px 10px 0;
+                line-height: 1.35;
+            }
+
+            .slider-track .slide {
+                min-height: 210px;
+                padding: clamp(18px, 4vw, 34px);
+                border-color: #303541;
+                background: linear-gradient(110deg, #151820 0%, #0d0f14 70%);
+            }
+
+            .slider-dots {
+                gap: 8px;
+                margin-top: 14px;
+            }
+
+            .slider-dots span {
+                width: 22px;
+                height: 3px;
+                background: #3a3f4b;
+            }
+
+            .slider-dots span.active {
+                width: 38px;
+                background: var(--gold);
+            }
+
+            .live-grid {
+                gap: 12px;
+            }
+
+            .live-score-card {
+                padding: 15px;
+                border-top: 2px solid #303541;
+            }
+
+            .live-score-card:hover {
+                border-top-color: var(--gold);
+            }
+
+            .match-header,
+            .match-status {
+                padding-block: 8px;
+                border-color: #292e39;
+            }
+
+            .profile-dropdown-item,
+            .sidebar-item {
+                min-height: 42px;
+                border-left: 2px solid transparent;
+            }
+
+            .profile-dropdown-item:hover,
+            .sidebar-item:hover,
+            .sidebar-item.active {
+                background: #171a22;
+                border-left-color: var(--gold);
+                color: var(--gold);
+            }
+
+            .modal-overlay {
+                backdrop-filter: blur(3px);
+                padding-block: 24px;
+                overflow-y: auto;
+            }
+
+            .modal-content {
+                position: relative;
+                max-height: calc(100dvh - 48px);
+                overflow-y: auto;
+                border-top: 3px solid var(--gold);
+            }
+
+            .modal-heading {
+                min-height: 42px;
+                padding-right: 52px;
+                border-bottom: 1px solid #303541;
+            }
+
+            .modal-close {
+                position: absolute;
+                top: 12px;
+                right: 12px;
+                display: inline-grid;
+                width: 40px;
+                height: 40px;
+                min-height: 40px;
+                place-items: center;
+                border: 0;
+                background: transparent;
+                color: var(--text-secondary);
+                cursor: pointer;
+            }
+
+            .modal-close:hover,
+            .modal-close:focus-visible {
+                background: transparent;
+                color: var(--gold);
+            }
+
+            .modal-close i {
+                font-size: 15px;
+                pointer-events: none;
+            }
+
+            .sidebar-close {
+                display: inline-grid;
+                width: 40px;
+                height: 40px;
+                min-height: 40px;
+                place-items: center;
+                border: 0;
+                background: transparent;
+                color: var(--text-secondary);
+                cursor: pointer;
+            }
+
+            .sidebar-close:hover,
+            .sidebar-close:focus-visible {
+                background: transparent;
+                color: var(--gold);
+            }
+
+            .ambassador-avatar {
+                background: var(--gold);
+                border-color: var(--gold);
+            }
+
+            .bottom-app-bar {
+                border-top: 1px solid #303541;
+                background: rgba(11, 13, 18, 0.97);
+            }
+
+            footer {
+                border-top: 1px solid #303541;
+                padding-top: 22px;
+            }
+
+            @media (min-width: 1024px) {
+                body > .max-w-7xl {
+                    padding-inline: 24px;
+                }
+
+                #gameGrid {
+                    grid-template-columns: repeat(6, minmax(0, 1fr));
+                }
+            }
+
+            @media (max-width: 639px) {
+                html,
+                body {
+                    margin-top: 0 !important;
+                    padding-top: 0 !important;
+                }
+
+                .header-glass {
+                    display: none;
+                }
+
+                .legacy-header.hidden {
+                    position: fixed !important;
+                    inset: 0 0 auto 0 !important;
+                    z-index: 180;
+                    display: flex !important;
+                    width: 100%;
+                    height: 56px;
+                    min-height: 56px;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin: 0 !important;
+                    padding: 0 10px;
+                    background: var(--gold-dark);
+                    color: #fff;
+                }
+
+                .legacy-header *,
+                .legacy-header *::before,
+                .legacy-header *::after {
+                    border-color: transparent !important;
+                }
+
+                .legacy-header .logo-text {
+                    color: #fff;
+                }
+
+                .legacy-header .site-logo-image {
+                    height: 34px;
+                    max-width: 130px;
+                }
+
+                .legacy-header #langToggle,
+                .legacy-header #profileToggle {
+                    min-height: 38px;
+                    color: #fff;
+                }
+
+                .legacy-header .mobile-only {
+                    display: inline-flex !important;
+                    width: 40px;
+                    height: 40px;
+                    min-height: 40px;
+                    flex: 0 0 40px;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 0;
+                    line-height: 1;
+                }
+
+                .legacy-header .mobile-only i {
+                    margin: 0;
+                    transform: none;
+                    font-size: 18px;
+                    line-height: 1;
+                }
+
+                .legacy-header > div:first-child,
+                .legacy-header > div:last-child {
+                    display: flex;
+                    align-items: center;
+                }
+
+                .legacy-header #langToggle:hover,
+                .legacy-header #langToggle:focus-visible,
+                .legacy-header #profileToggle:hover,
+                .legacy-header #profileToggle:focus-visible,
+                .legacy-header .sidebar-close:hover,
+                .legacy-header .sidebar-close:focus-visible {
+                    color: var(--gold);
+                }
+
+                .legacy-header .profile-dropdown {
+                    top: calc(100% + 8px);
+                    background: color-mix(in srgb, var(--gold-dark) 92%, #000 8%);
+                }
+
+                .legacy-header button,
+                .legacy-header a,
+                .legacy-header .avatar-ring {
+                    background: transparent !important;
+                }
+
+                body > .max-w-7xl {
+                    padding-inline: 10px;
+                    padding-top: 66px;
+                }
+
+                .header-top,
+                .header-top-inner {
+                    min-height: 54px;
+                }
+                .header-top-inner,
+                .header-nav-inner {
+                    padding-inline: 10px;
+                }
+                .header-brand {
+                    min-width: 0;
+                }
+                .header-brand .site-logo-image {
+                    height: 34px;
+                    max-width: 130px;
+                }
+                .header-actions {
+                    gap: 6px;
+                }
+                .header-auth-button {
+                    min-width: auto;
+                    min-height: 34px;
+                    padding: 6px 10px;
+                    font-size: 11px;
+                }
+                .header-language {
+                    min-height: 34px;
+                    font-size: 10px;
+                }
+                .header-language .currency-label,
+                .header-language .language-name {
+                    display: none;
+                }
+                .header-nav,
+                .header-nav-inner,
+                .header-nav a,
+                .header-menu-button {
+                    min-height: 42px;
+                }
+
+                section.glass {
+                    padding: 13px !important;
+                }
+
+                #gameGrid {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+
+                .slider-track .slide {
+                    min-height: 190px;
+                    padding: 18px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <!-- ═══ SIDEBAR (Mobile Menu) ═══ -->
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <div
+            id="sidebarOverlay"
+            class="fixed inset-0 z-[200] sidebar-overlay hidden"
+            onclick="closeSidebar()"
+        >
+            <div class="sidebar h-full overflow-y-auto" onclick="event.stopPropagation()">
+                <div
+                    class="p-4 border-b border-[var(--border-light)] flex items-center justify-between"
+                >
+                    <span class="logo-text text-2xl">JUBO88</span>
+                    <button
+                        type="button"
+                        onclick="closeSidebar()"
+                        class="sidebar-close"
+                        aria-label="Close navigation menu"
+                    >
+                        <i class="fas fa-xmark" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="p-3 space-y-1">
+                    <div class="sidebar-item active"><i class="fas fa-home"></i> Home</div>
+                    <div class="sidebar-item"><i class="fas fa-gamepad"></i> Games</div>
+                    <div class="sidebar-item"><i class="fas fa-trophy"></i> Live Matches</div>
+                    <div class="sidebar-item"><i class="fas fa-fire"></i> Trending</div>
+                    <div class="sidebar-item"><i class="fas fa-gift"></i> Promotions</div>
+                    <div class="sidebar-item"><i class="fas fa-wallet"></i> Wallet</div>
+                    <div class="sidebar-item"><i class="fas fa-user"></i> Profile</div>
+                    <div class="sidebar-item"><i class="fas fa-cog"></i> Settings</div>
+                </div>
+                <div class="p-4 border-t border-[var(--border-light)] mt-4">
+                    <div class="flex items-center gap-3 text-sm text-[var(--text-muted)]">
+                        <i class="fas fa-shield-alt text-[#f5b81b]"></i>
+                        <span>v2.0 · Secure</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <!-- ═══ MAIN WRAPPER ═══ -->
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <div class="max-w-7xl mx-auto px-4 py-3 space-y-4 min-h-screen pb-24 lg:pb-6">
+            <!-- ═══ HEADER ═══ -->
+            <header class="header-glass">
+                <div class="header-top">
+                    <div class="header-top-inner">
+                        <div class="header-brand">
+                            <button
+                                type="button"
+                                class="header-menu-button mobile-only"
+                                onclick="openSidebar()"
+                                aria-label="Open menu"
+                            >
+                                <i class="fas fa-bars" aria-hidden="true"></i>
+                            </button>
+                            <a href="/" class="logo-text" aria-label="Homepage">JUBO88</a>
+                        </div>
+                        <div class="header-actions">
+                            <button
+                                type="button"
+                                class="header-auth-button"
+                                onclick="openModal('loginModal')"
+                            >
+                                Login
+                            </button>
+                            <button
+                                type="button"
+                                class="header-auth-button primary"
+                                onclick="openModal('registerModal')"
+                            >
+                                Sign Up
+                            </button>
+                            <button
+                                type="button"
+                                id="headerLanguageToggle"
+                                class="header-language"
+                                onclick="openModal('langModal')"
+                                aria-label="Change language and currency"
+                            >
+                                <span class="header-language-dot" aria-hidden="true"></span
+                                ><span class="currency-label">৳ BDT</span
+                                ><span class="language-name">English</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <nav class="header-nav" aria-label="Primary navigation">
+                    <div class="header-nav-inner">
+                        <button
+                            type="button"
+                            class="header-menu-button"
+                            onclick="openSidebar()"
+                            aria-label="Open category menu"
+                        >
+                            <i class="fas fa-mobile-screen-button" aria-hidden="true"></i>
+                        </button>
+                        <a href="/" class="active" aria-current="page"
+                            ><i class="fas fa-house" aria-hidden="true"></i
+                            ><span class="sr-only">Home</span></a
+                        >
+                        <a href="/cricket"
+                            >Cricket <i class="fas fa-chevron-down" aria-hidden="true"></i
+                        ></a>
+                        <a href="/casino"
+                            >Live Casino <i class="fas fa-chevron-down" aria-hidden="true"></i
+                        ></a>
+                        <a href="/slot"
+                            >Slot Games <i class="fas fa-chevron-down" aria-hidden="true"></i
+                        ></a>
+                        <a href="/games"
+                            >Table Games <i class="fas fa-chevron-down" aria-hidden="true"></i
+                        ></a>
+                        <a href="/sportsbook"
+                            >Sportsbook <i class="fas fa-chevron-down" aria-hidden="true"></i
+                        ></a>
+                        <a href="/fishing"
+                            >Fishing <i class="fas fa-chevron-down" aria-hidden="true"></i
+                        ></a>
+                        <a href="/crash"
+                            >Crash <i class="fas fa-chevron-down" aria-hidden="true"></i
+                        ></a>
+                        <a href="/promotion">Promotion</a>
+                        <a href="/jayarank/challenge"
+                            >Jaya Rank <span class="header-new-badge">NEW</span></a
+                        >
+                    </div>
+                </nav>
+            </header>
+
+            <header class="legacy-header hidden">
+                <div class="flex items-center gap-3">
+                    <button
+                        onclick="openSidebar()"
+                        class="mobile-only text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors text-lg"
+                    >
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="logo-text">JUBO88</span>
+                    <nav
+                        class="desktop-only items-center gap-5 ml-4 text-sm font-medium text-[var(--text-secondary)]"
+                    >
+                        <a href="/" class="hover:text-[var(--text-primary)] transition-colors"
+                            >Home</a
+                        >
+                        <a href="/games" class="hover:text-[var(--text-primary)] transition-colors"
+                            >Games</a
+                        >
+                        <a href="/casino" class="hover:text-[var(--text-primary)] transition-colors"
+                            >Live</a
+                        >
+                        <a
+                            href="/promotion"
+                            class="hover:text-[var(--text-primary)] transition-colors"
+                            >Promo</a
+                        >
+                    </nav>
+                </div>
+
+                <div class="flex items-center gap-2 relative">
+                    <!-- Language Toggle -->
+                    <button
+                        id="langToggle"
+                        class="flex items-center gap-1.5 text-[11px] font-medium text-[var(--text-secondary)] hover:text-[#f5b81b] transition-colors px-2.5 py-1.5 rounded-lg hover:bg-[rgba(245,184,27,0.04)]"
+                    >
+                        <i class="fas fa-globe text-[12px]"></i>
+                        <span class="hidden xs:inline">EN</span>
+                        <i class="fas fa-chevron-down text-[7px] opacity-40"></i>
+                    </button>
+
+                    <!-- Profile / Auth -->
+                    <div class="relative" id="profileContainer">
+                        <button
+                            id="profileToggle"
+                            class="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-[rgba(245,184,27,0.04)] transition-colors"
+                        >
+                            <div
+                                class="w-8 h-8 rounded-full bg-gradient-to-br from-[#f5e6b0] to-[#e8d080] border border-[rgba(245,184,27,0.15)] flex items-center justify-center text-[12px] font-bold text-[#b87a00] avatar-ring"
+                            >
+                                G
+                            </div>
+                            <i class="fas fa-chevron-down text-[7px] text-[var(--text-muted)]"></i>
+                        </button>
+                        <div
+                            id="profileDropdown"
+                            class="profile-dropdown absolute right-0 top-full mt-2 w-56 hidden z-50 p-1.5"
+                        >
+                            <div class="px-3 py-2.5 border-b border-[var(--border-light)]">
+                                <p class="text-sm font-semibold text-[var(--text-primary)]">
+                                    Guest User
+                                </p>
+                                <p class="text-[10px] text-[var(--text-muted)]">Not signed in</p>
+                            </div>
+                            <div class="py-1">
+                                <div
+                                    class="profile-dropdown-item"
+                                    onclick="openModal('loginModal')"
+                                >
+                                    <i class="fas fa-sign-in-alt"></i> Login
+                                </div>
+                                <div
+                                    class="profile-dropdown-item"
+                                    onclick="openModal('registerModal')"
+                                >
+                                    <i class="fas fa-user-plus"></i> Register
+                                </div>
+                                <div class="profile-dropdown-item" onclick="openModal('langModal')">
+                                    <i class="fas fa-language"></i> Language
+                                </div>
+                                <div
+                                    class="profile-dropdown-item"
+                                    onclick="openModal('profileModal')"
+                                >
+                                    <i class="fas fa-user-circle"></i> My Profile
+                                </div>
+                            </div>
+                            <div class="border-t border-[var(--border-light)] pt-1">
+                                <div class="profile-dropdown-item text-[var(--text-muted)]">
+                                    <i class="fas fa-moon"></i> Dark Mode
+                                    <span class="ml-auto text-[10px] text-[#f5b81b]">●</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ═══ SLIDER ═══ -->
+            <section class="glass rounded-2xl p-4 card-glow glass-hover overflow-hidden">
+                <div class="slider-container" id="promoSlider">
+                    <div class="slider-track" id="sliderTrack">
+                        <div class="slide hero-slide">
+                            <div class="flex items-start justify-between flex-wrap gap-4">
+                                <div>
+                                    <span class="badge-filled text-[8px] mb-2 inline-block"
+                                        >🎯 MEGA BONUS</span
+                                    >
+                                    <h2 class="text-[var(--text-primary)]">
+                                        WIN HONDA <br /><span style="color: #f5b81b">CBR 150R</span>
+                                    </h2>
+                                    <p class="sub-text">
+                                        Super Betting Pass – every bet brings you closer
+                                    </p>
+                                    <button class="btn-primary text-sm mt-3 px-5 py-2">
+                                        Claim Now
+                                    </button>
+                                </div>
+                                <span class="text-5xl opacity-20 hidden sm:block">🏍️</span>
+                            </div>
+                        </div>
+                        <div class="slide hero-slide">
+                            <div class="flex items-start justify-between flex-wrap gap-4">
+                                <div>
+                                    <span
+                                        class="badge-filled text-[8px] mb-2 inline-block"
+                                        style="
+                                            background: linear-gradient(135deg, #f5b81b, #d4910f);
+                                        "
+                                        >🎰 SLOT BONUS</span
+                                    >
+                                    <h2 class="text-[var(--text-primary)]">
+                                        100% Deposit <br /><span style="color: #f5b81b"
+                                            >Match Bonus</span
+                                        >
+                                    </h2>
+                                    <p class="sub-text">Up to ₹10,000 free on your first deposit</p>
+                                    <button class="btn-primary text-sm mt-3 px-5 py-2">
+                                        Get Bonus
+                                    </button>
+                                </div>
+                                <span class="text-5xl opacity-20 hidden sm:block">🎁</span>
+                            </div>
+                        </div>
+                        <div class="slide hero-slide">
+                            <div class="flex items-start justify-between flex-wrap gap-4">
+                                <div>
+                                    <span
+                                        class="badge-filled text-[8px] mb-2 inline-block"
+                                        style="
+                                            background: linear-gradient(135deg, #f5b81b, #d4910f);
+                                        "
+                                        >🏏 CRICKET</span
+                                    >
+                                    <h2 class="text-[var(--text-primary)]">
+                                        IPL <span style="color: #f5b81b">Special</span>
+                                    </h2>
+                                    <p class="sub-text">
+                                        Enhanced odds &amp; free bets on every match
+                                    </p>
+                                    <button class="btn-primary text-sm mt-3 px-5 py-2">
+                                        Bet Now
+                                    </button>
+                                </div>
+                                <span class="text-5xl opacity-20 hidden sm:block">🏏</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slider-dots" id="sliderDots">
+                    <span class="active" data-index="0"></span>
+                    <span data-index="1"></span>
+                    <span data-index="2"></span>
+                </div>
+            </section>
+
+            <!-- ═══ GAME CATEGORIES ═══ -->
+            <section>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="section-title"><span class="bar"></span> Categories</span>
+                    <span class="see-all" onclick="scrollCategories()"
+                        >See All <i class="fas fa-arrow-right text-[10px]"></i
+                    ></span>
+                </div>
+                <div class="category-scroll" id="categoryScroll">
+                    <span class="cat-item active">Loading...</span>
+                </div>
+                <div class="provider-mega" id="providerMega" aria-label="Providers"></div>
+            </section>
+
+            <!-- ═══ GAMES SECTION ═══ -->
+            <section>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="section-title"><span class="bar"></span> Popular Games</span>
+                    <span class="see-all"
+                        >View All <i class="fas fa-arrow-right text-[10px]"></i
+                    ></span>
+                </div>
+                <div class="grid grid-cols-3 gap-2.5 lg:grid-cols-6" id="gameGrid">
+                    <p class="col-span-full text-center text-[var(--text-muted)] py-8">
+                        Loading games...
+                    </p>
+                </div>
+            </section>
+            <section>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="section-title"><span class="bar"></span> Recently Clicked</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2.5 lg:grid-cols-6" id="recentGameGrid">
+                    <p class="col-span-full text-center text-[var(--text-muted)] py-8">
+                        No recently clicked games yet.
+                    </p>
+                </div>
+            </section>
+            <!-- LIVE SCORES ═══ -->
+            <section>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="section-title"><span class="bar"></span> Live Scores</span>
+                    <span class="badge-live">● LIVE</span>
+                </div>
+                <div class="live-grid">
+                    <div class="live-score-card">
+                        <div class="match-header">
+                            <span>🏏 T20 World Cup · Match 23</span>
+                            <span>12.2 ov</span>
+                        </div>
+                        <div class="match-teams">
+                            <div class="team">
+                                <span class="team-flag">🇮🇳</span>
+                                <div>
+                                    <div class="team-name">India</div>
+                                    <div class="team-score">94/2</div>
+                                </div>
+                            </div>
+                            <div
+                                class="text-center text-[var(--text-muted)] text-[10px] font-semibold"
+                            >
+                                <span class="bg-[rgba(245,184,27,0.06)] px-2 py-0.5 rounded-full"
+                                    >VS</span
+                                >
+                            </div>
+                            <div class="team text-right">
+                                <div>
+                                    <div class="team-name">Australia</div>
+                                    <div class="team-score">—</div>
+                                </div>
+                                <span class="team-flag">🇦🇺</span>
+                            </div>
+                        </div>
+                        <div class="match-status">
+                            <span><span class="live-dot"></span> India batting</span>
+                            <span>Need 156 · 7.2 RPO</span>
+                        </div>
+                    </div>
+
+                    <div class="live-score-card">
+                        <div class="match-header">
+                            <span>⚽ Premier League · Match 12</span>
+                            <span>72'</span>
+                        </div>
+                        <div class="match-teams">
+                            <div class="team">
+                                <span class="team-flag">🔴</span>
+                                <div>
+                                    <div class="team-name">Man Utd</div>
+                                    <div class="team-score">2</div>
+                                </div>
+                            </div>
+                            <div
+                                class="text-center text-[var(--text-muted)] text-[10px] font-semibold"
+                            >
+                                <span class="bg-[rgba(245,184,27,0.06)] px-2 py-0.5 rounded-full"
+                                    >VS</span
+                                >
+                            </div>
+                            <div class="team text-right">
+                                <div>
+                                    <div class="team-name">Chelsea</div>
+                                    <div class="team-score">1</div>
+                                </div>
+                                <span class="team-flag">🔵</span>
+                            </div>
+                        </div>
+                        <div class="match-status">
+                            <span><span class="live-dot"></span> 2nd Half</span>
+                            <span>Shots: 12 · 8</span>
+                        </div>
+                    </div>
+
+                    <div class="live-score-card">
+                        <div class="match-header">
+                            <span>🏏 IPL · Match 45</span>
+                            <span>8.4 ov</span>
+                        </div>
+                        <div class="match-teams">
+                            <div class="team">
+                                <span class="team-flag">💛</span>
+                                <div>
+                                    <div class="team-name">CSK</div>
+                                    <div class="team-score">62/1</div>
+                                </div>
+                            </div>
+                            <div
+                                class="text-center text-[var(--text-muted)] text-[10px] font-semibold"
+                            >
+                                <span class="bg-[rgba(245,184,27,0.06)] px-2 py-0.5 rounded-full"
+                                    >VS</span
+                                >
+                            </div>
+                            <div class="team text-right">
+                                <div>
+                                    <div class="team-name">MI</div>
+                                    <div class="team-score">—</div>
+                                </div>
+                                <span class="team-flag">💙</span>
+                            </div>
+                        </div>
+                        <div class="match-status">
+                            <span><span class="live-dot"></span> CSK batting</span>
+                            <span>Target: 189</span>
+                        </div>
+                    </div>
+
+                    <div class="live-score-card">
+                        <div class="match-header">
+                            <span>🏀 NBA · Lakers vs Warriors</span>
+                            <span>Q3 4:32</span>
+                        </div>
+                        <div class="match-teams">
+                            <div class="team">
+                                <span class="team-flag">💜</span>
+                                <div>
+                                    <div class="team-name">Lakers</div>
+                                    <div class="team-score">78</div>
+                                </div>
+                            </div>
+                            <div
+                                class="text-center text-[var(--text-muted)] text-[10px] font-semibold"
+                            >
+                                <span class="bg-[rgba(245,184,27,0.06)] px-2 py-0.5 rounded-full"
+                                    >VS</span
+                                >
+                            </div>
+                            <div class="team text-right">
+                                <div>
+                                    <div class="team-name">Warriors</div>
+                                    <div class="team-score">72</div>
+                                </div>
+                                <span class="team-flag">💛</span>
+                            </div>
+                        </div>
+                        <div class="match-status">
+                            <span><span class="live-dot"></span> 3rd Quarter</span>
+                            <span>Rebounds: 32 · 28</span>
+                        </div>
+                    </div>
+
+                    <div class="live-score-card">
+                        <div class="match-header">
+                            <span>🎾 Wimbledon · Final</span>
+                            <span>Set 3</span>
+                        </div>
+                        <div class="match-teams">
+                            <div class="team">
+                                <span class="team-flag">🎾</span>
+                                <div>
+                                    <div class="team-name">Djokovic</div>
+                                    <div class="team-score">6-4</div>
+                                </div>
+                            </div>
+                            <div
+                                class="text-center text-[var(--text-muted)] text-[10px] font-semibold"
+                            >
+                                <span class="bg-[rgba(245,184,27,0.06)] px-2 py-0.5 rounded-full"
+                                    >VS</span
+                                >
+                            </div>
+                            <div class="team text-right">
+                                <div>
+                                    <div class="team-name">Alcaraz</div>
+                                    <div class="team-score">3-6</div>
+                                </div>
+                                <span class="team-flag">🎾</span>
+                            </div>
+                        </div>
+                        <div class="match-status">
+                            <span><span class="live-dot"></span> Deuce</span>
+                            <span>2nd serve</span>
+                        </div>
+                    </div>
+
+                    <div class="live-score-card">
+                        <div class="match-header">
+                            <span>⚽ La Liga · El Clásico</span>
+                            <span>55'</span>
+                        </div>
+                        <div class="match-teams">
+                            <div class="team">
+                                <span class="team-flag">🔵🔴</span>
+                                <div>
+                                    <div class="team-name">Barcelona</div>
+                                    <div class="team-score">1</div>
+                                </div>
+                            </div>
+                            <div
+                                class="text-center text-[var(--text-muted)] text-[10px] font-semibold"
+                            >
+                                <span class="bg-[rgba(245,184,27,0.06)] px-2 py-0.5 rounded-full"
+                                    >VS</span
+                                >
+                            </div>
+                            <div class="team text-right">
+                                <div>
+                                    <div class="team-name">Real Madrid</div>
+                                    <div class="team-score">1</div>
+                                </div>
+                                <span class="team-flag">⚪</span>
+                            </div>
+                        </div>
+                        <div class="match-status">
+                            <span><span class="live-dot"></span> 2nd Half</span>
+                            <span>Possession: 58% · 42%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ JUBO88 BRAND SECTION ═══ -->
+            <section class="glass rounded-2xl p-5 card-glow glass-hover relative overflow-hidden">
+                <div
+                    class="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-[#f5b81b] opacity-[0.02] blur-3xl pointer-events-none"
+                ></div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-3 mb-2.5">
+                        <span class="text-2xl font-black tracking-tight" style="color: #f5b81b"
+                            >JUBO88</span
+                        >
+                        <span class="badge-gold text-[8px]">🔥 trending</span>
+                    </div>
+                    <div class="gujarati-text space-y-1.5">
+                        <p class="text-[var(--text-secondary)] text-sm font-medium leading-relaxed">
+                            <span style="color: #f5b81b">ગાળા બંધ દ્વિટુ!</span>
+                            બંધની JUBO88 ગાળાની સોલેનલ ક્રમને બંધ આરડ્ હાન વિતરે અસ્તિકારો પેસ્ટમાં
+                            જમા!
+                        </p>
+                        <p class="text-[var(--text-secondary)] text-sm font-medium leading-relaxed">
+                            બંધની સોલેનલ ક્રમ
+                        </p>
+                    </div>
+                    <div class="divider-glow my-3"></div>
+                    <div class="flex items-center gap-5 text-sm font-semibold">
+                        <span class="tab-active cursor-pointer">Current</span>
+                        <span
+                            class="text-[var(--text-muted)] cursor-pointer hover:text-[var(--text-primary)] transition-colors"
+                            >Upcoming</span
+                        >
+                        <span
+                            class="text-[var(--text-muted)] cursor-pointer hover:text-[var(--text-primary)] transition-colors"
+                            >Feature</span
+                        >
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ BRAND AMBASSADOR ═══ -->
+            <section class="glass rounded-2xl p-5 card-glow glass-hover flex items-center gap-4">
+                <div class="ambassador-avatar flex-shrink-0">
+                    <span>S</span>
+                </div>
+                <div>
+                    <p
+                        class="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]"
+                    >
+                        Brand Ambassador
+                    </p>
+                    <h3 class="text-base font-bold text-[var(--text-primary)] leading-tight">
+                        Sanjiv Mahi Khan
+                    </h3>
+                    <p class="text-[11px] font-medium text-[#f5b81b] tracking-wide">2024 / 2025</p>
+                </div>
+                <div class="ml-auto">
+                    <span class="badge-gold text-[8px]">★ featured</span>
+                </div>
+            </section>
+
+            <!-- ═══ INFO CARD ═══ -->
+            <section class="glass rounded-2xl p-5 card-glow glass-hover space-y-3">
+                <div class="flex items-center gap-3">
+                    <span class="text-xl font-black tracking-tight" style="color: #f5b81b"
+                        >JUBO88</span
+                    >
+                    <span class="w-6 h-0.5 bg-[#f5b81b] opacity-20"></span>
+                    <span class="badge-gold text-[8px]">secure</span>
+                </div>
+                <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
+                    Jabap provides secure online gaming, fast transactions, and responsive support
+                    for players across multiple regions and devices.
+                </p>
+                <div class="flex flex-wrap items-center gap-3 pt-0.5">
+                    <span
+                        class="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)]"
+                    >
+                        <span class="text-[#f5b81b] text-sm">⏺</span> 18+
+                    </span>
+                    <span
+                        class="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)]"
+                    >
+                        <span class="text-[#f5b81b] text-sm">✓</span> Licensed
+                    </span>
+                    <span
+                        class="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)]"
+                    >
+                        <span class="text-[#f5b81b] text-sm">🕒</span> 24/7 Support
+                    </span>
+                </div>
+                <div class="divider-glow !my-1.5"></div>
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-[var(--text-muted)] font-medium">Need help?</span>
+                    <a
+                        href="/contact"
+                        class="text-[#f5b81b] font-semibold cursor-pointer hover:underline transition-all"
+                    >
+                        Contact support <i class="fas fa-arrow-right text-[10px] ml-1"></i>
+                    </a>
+                </div>
+            </section>
+
+            <!-- ═══ FOOTER ═══ -->
+            <footer class="footer-glow">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="footer-heading mb-2 flex items-center gap-2">
+                            <i class="fas fa-link text-[10px] text-[#f5b81b]"></i> Quick Links
+                        </h4>
+                        <a href="/" class="footer-link"><i class="fas fa-home"></i> Home</a>
+                        <a href="/games" class="footer-link"
+                            ><i class="fas fa-gamepad"></i> Games</a
+                        >
+                        <a href="/sportsbook" class="footer-link"
+                            ><i class="fas fa-trophy"></i> Sports</a
+                        >
+                        <a href="/promotion" class="footer-link"
+                            ><i class="fas fa-gift"></i> Promotions</a
+                        >
+                    </div>
+                    <div>
+                        <h4 class="footer-heading mb-2 flex items-center gap-2">
+                            <i class="fas fa-gavel text-[10px] text-[#f5b81b]"></i> Legal
+                        </h4>
+                        <a href="/terms" class="footer-link"
+                            ><i class="fas fa-file-contract"></i> Terms &amp; Conditions</a
+                        >
+                        <a href="/privacy" class="footer-link"
+                            ><i class="fas fa-shield-alt"></i> Privacy Policy</a
+                        >
+                        <a href="/responsible-gaming" class="footer-link"
+                            ><i class="fas fa-user-shield"></i> Responsible Gaming</a
+                        >
+                        <a href="/cookies" class="footer-link"
+                            ><i class="fas fa-cookie-bite"></i> Cookie Policy</a
+                        >
+                    </div>
+                </div>
+
+                <div class="divider-glow my-3"></div>
+
+                <div
+                    class="footer-bottom flex flex-col sm:flex-row items-center justify-between gap-2"
+                >
+                    <span class="font-medium">© 2026 JUBO88 · All rights reserved</span>
+                    <div class="flex items-center gap-4">
+                        <span
+                            class="flex items-center gap-1.5 text-[var(--text-muted)] text-[9px] font-medium"
+                        >
+                            <i class="fas fa-lock text-[#f5b81b] opacity-60"></i> Secure
+                        </span>
+                        <span
+                            class="flex items-center gap-1.5 text-[var(--text-muted)] text-[9px] font-medium"
+                        >
+                            <i class="fas fa-check-circle text-[#f5b81b] opacity-60"></i> Fair
+                        </span>
+                        <span
+                            class="flex items-center gap-1.5 text-[var(--text-muted)] text-[9px] font-medium"
+                        >
+                            <i class="fas fa-smile text-[#f5b81b] opacity-60"></i> Fun
+                        </span>
+                        <span
+                            class="flex items-center gap-1.5 text-[var(--text-muted)] text-[9px] font-medium"
+                        >
+                            <i class="fas fa-headset text-[#f5b81b] opacity-60"></i> 24/7
+                        </span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <!-- ═══ BOTTOM APP BAR (Mobile) ═══ -->
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <nav class="bottom-app-bar mobile-only">
+            <button class="bar-item active" onclick="navigateTo(this, 'home')">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </button>
+            <button class="bar-item" onclick="navigateTo(this, 'games')">
+                <i class="fas fa-gamepad"></i>
+                <span>Games</span>
+            </button>
+            <button class="bar-item" onclick="navigateTo(this, 'live')">
+                <i class="fas fa-trophy"></i>
+                <span>Live</span>
+                <span class="badge-dot"></span>
+            </button>
+            <button class="bar-item" onclick="navigateTo(this, 'wallet')">
+                <i class="fas fa-wallet"></i>
+                <span>Wallet</span>
+            </button>
+            <button class="bar-item" onclick="navigateTo(this, 'profile')">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </button>
+        </nav>
+
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <!-- ═══ MODALS ═══ -->
+        <!-- ════════════════════════════════════════════════════════════ -->
+
+        <!-- ─── LOGIN ─── -->
+        <div
+            id="loginModal"
+            class="fixed inset-0 z-[300] flex items-center justify-center px-4 modal-overlay hidden"
+            onclick="if (event.target === this) closeModal('loginModal');"
+        >
+            <div class="modal-content glass rounded-2xl p-6 w-full max-w-sm card-glow">
+                <div class="modal-heading flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-[var(--text-primary)]">Welcome Back</h2>
+                    <button
+                        type="button"
+                        onclick="closeModal('loginModal')"
+                        class="modal-close"
+                        aria-label="Close sign-in dialog"
+                    >
+                        <i class="fas fa-xmark" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <p class="text-[13px] text-[var(--text-secondary)] mb-5">
+                    Sign in to your JUBO88 account
+                </p>
+                <form
+                    onsubmit="
+                        event.preventDefault();
+                        closeModal('loginModal');
+                    "
+                >
+                    <div class="space-y-3.5">
+                        <input
+                            type="email"
+                            placeholder="Email address"
+                            class="input-gold"
+                            required
+                        />
+                        <input type="password" placeholder="Password" class="input-gold" required />
+                        <div class="flex items-center justify-between text-xs">
+                            <label
+                                class="flex items-center gap-1.5 text-[var(--text-secondary)] cursor-pointer"
+                            >
+                                <input type="checkbox" class="accent-[#f5b81b]" /> Remember me
+                            </label>
+                            <a href="#" class="text-[#f5b81b] hover:underline">Forgot password?</a>
+                        </div>
+                        <button type="submit" class="btn-primary w-full">Sign In</button>
+                    </div>
+                </form>
+                <p class="text-center text-[12px] text-[var(--text-muted)] mt-4">
+                    Don't have an account?
+                    <button
+                        onclick="
+                            closeModal('loginModal');
+                            openModal('registerModal');
+                        "
+                        class="text-[#f5b81b] font-semibold hover:underline"
+                    >
+                        Register
+                    </button>
+                </p>
+            </div>
+        </div>
+
+        <!-- ─── REGISTER ─── -->
+        <div
+            id="registerModal"
+            class="fixed inset-0 z-[300] flex items-center justify-center px-4 modal-overlay hidden"
+            onclick="if (event.target === this) closeModal('registerModal');"
+        >
+            <div class="modal-content glass rounded-2xl p-6 w-full max-w-sm card-glow">
+                <div class="modal-heading flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-[var(--text-primary)]">Create Account</h2>
+                    <button
+                        type="button"
+                        onclick="closeModal('registerModal')"
+                        class="modal-close"
+                        aria-label="Close registration dialog"
+                    >
+                        <i class="fas fa-xmark" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <p class="text-[13px] text-[var(--text-secondary)] mb-5">
+                    Join JUBO88 and start winning
+                </p>
+                <form
+                    onsubmit="
+                        event.preventDefault();
+                        closeModal('registerModal');
+                    "
+                >
+                    <div class="space-y-3.5">
+                        <input type="text" placeholder="Full name" class="input-gold" required />
+                        <input
+                            type="email"
+                            placeholder="Email address"
+                            class="input-gold"
+                            required
+                        />
+                        <input
+                            type="password"
+                            placeholder="Password (min 8 chars)"
+                            class="input-gold"
+                            required
+                        />
+                        <input
+                            type="password"
+                            placeholder="Confirm password"
+                            class="input-gold"
+                            required
+                        />
+                        <label
+                            class="flex items-center gap-2 text-xs text-[var(--text-secondary)] cursor-pointer"
+                        >
+                            <input type="checkbox" class="accent-[#f5b81b]" required /> I agree to
+                            the <a href="#" class="text-[#f5b81b] hover:underline">Terms</a> &amp;
+                            <a href="#" class="text-[#f5b81b] hover:underline">Privacy Policy</a>
+                        </label>
+                        <button type="submit" class="btn-primary w-full">Create Account</button>
+                    </div>
+                </form>
+                <p class="text-center text-[12px] text-[var(--text-muted)] mt-4">
+                    Already have an account?
+                    <button
+                        onclick="
+                            closeModal('registerModal');
+                            openModal('loginModal');
+                        "
+                        class="text-[#f5b81b] font-semibold hover:underline"
+                    >
+                        Sign In
+                    </button>
+                </p>
+            </div>
+        </div>
+
+        <!-- ─── LANGUAGE ─── -->
+        <div
+            id="langModal"
+            class="fixed inset-0 z-[300] flex items-center justify-center px-4 modal-overlay hidden"
+            onclick="if (event.target === this) closeModal('langModal');"
+        >
+            <div class="modal-content glass rounded-2xl p-6 w-full max-w-sm card-glow">
+                <div class="modal-heading flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-[var(--text-primary)]">Choose Language</h2>
+                    <button
+                        type="button"
+                        onclick="closeModal('langModal')"
+                        class="modal-close"
+                        aria-label="Close language dialog"
+                    >
+                        <i class="fas fa-xmark" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <p class="text-[13px] text-[var(--text-secondary)] mb-4">
+                    Select your preferred language
+                </p>
+                <div class="space-y-1.5">
+                    <div class="lang-option active" onclick="selectLanguage(this, 'English')">
+                        <span class="text-lg">🇬🇧</span>
+                        <span class="text-sm font-medium text-[var(--text-primary)]">English</span>
+                        <span class="lang-check ml-auto"><i class="fas fa-check-circle"></i></span>
+                    </div>
+                    <div class="lang-option" onclick="selectLanguage(this, 'Gujarati')">
+                        <span class="text-lg">🇮🇳</span>
+                        <span class="text-sm font-medium text-[var(--text-primary)]">Gujarati</span>
+                        <span class="lang-check ml-auto"><i class="fas fa-check-circle"></i></span>
+                    </div>
+                    <div class="lang-option" onclick="selectLanguage(this, 'Hindi')">
+                        <span class="text-lg">🇮🇳</span>
+                        <span class="text-sm font-medium text-[var(--text-primary)]">Hindi</span>
+                        <span class="lang-check ml-auto"><i class="fas fa-check-circle"></i></span>
+                    </div>
+                    <div class="lang-option" onclick="selectLanguage(this, 'Spanish')">
+                        <span class="text-lg">🇪🇸</span>
+                        <span class="text-sm font-medium text-[var(--text-primary)]">Spanish</span>
+                        <span class="lang-check ml-auto"><i class="fas fa-check-circle"></i></span>
+                    </div>
+                    <div class="lang-option" onclick="selectLanguage(this, 'French')">
+                        <span class="text-lg">🇫🇷</span>
+                        <span class="text-sm font-medium text-[var(--text-primary)]">French</span>
+                        <span class="lang-check ml-auto"><i class="fas fa-check-circle"></i></span>
+                    </div>
+                </div>
+                <button onclick="closeModal('langModal')" class="btn-primary w-full mt-4">
+                    Confirm
+                </button>
+            </div>
+        </div>
+
+        <!-- ─── PROFILE ─── -->
+        <div
+            id="profileModal"
+            class="fixed inset-0 z-[300] flex items-center justify-center px-4 modal-overlay hidden"
+            onclick="if (event.target === this) closeModal('profileModal');"
+        >
+            <div class="modal-content glass rounded-2xl p-6 w-full max-w-sm card-glow">
+                <div class="modal-heading flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-[var(--text-primary)]">My Profile</h2>
+                    <button
+                        type="button"
+                        onclick="closeModal('profileModal')"
+                        class="modal-close"
+                        aria-label="Close profile dialog"
+                    >
+                        <i class="fas fa-xmark" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="flex flex-col items-center text-center">
+                    <div
+                        class="w-20 h-20 rounded-full bg-gradient-to-br from-[#f5e6b0] to-[#e8d080] border-2 border-[rgba(245,184,27,0.2)] flex items-center justify-center text-3xl font-bold text-[#b87a00] avatar-ring"
+                    >
+                        G
+                    </div>
+                    <h3 class="text-lg font-bold text-[var(--text-primary)] mt-3">Guest User</h3>
+                    <p class="text-[13px] text-[var(--text-secondary)]">Not signed in</p>
+                    <div class="divider-glow w-full my-4"></div>
+                    <div class="w-full space-y-2 text-left">
+                        <div
+                            class="flex items-center justify-between py-2 border-b border-[var(--border-light)]"
+                        >
+                            <span class="text-[13px] text-[var(--text-secondary)]">Status</span>
+                            <span class="text-[13px] font-medium text-[#f5b81b]">Guest</span>
+                        </div>
+                        <div
+                            class="flex items-center justify-between py-2 border-b border-[var(--border-light)]"
+                        >
+                            <span class="text-[13px] text-[var(--text-secondary)]">Joined</span>
+                            <span class="text-[13px] font-medium text-[var(--text-primary)]"
+                                >—</span
+                            >
+                        </div>
+                        <div class="flex items-center justify-between py-2">
+                            <span class="text-[13px] text-[var(--text-secondary)]">Account</span>
+                            <span class="text-[13px] font-medium text-[var(--text-primary)]"
+                                >Not verified</span
+                            >
+                        </div>
+                    </div>
+                    <div class="flex gap-3 w-full mt-4">
+                        <button
+                            onclick="
+                                closeModal('profileModal');
+                                openModal('loginModal');
+                            "
+                            class="btn-primary flex-1"
+                        >
+                            Sign In
+                        </button>
+                        <button
+                            onclick="
+                                closeModal('profileModal');
+                                openModal('registerModal');
+                            "
+                            class="btn-outline flex-1 text-center"
+                        >
+                            Register
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <!-- ═══ JAVASCRIPT ═══ -->
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <script>
+            // ─── Sidebar ───
+            function openSidebar() {
+                document.getElementById('sidebarOverlay').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeSidebar() {
+                document.getElementById('sidebarOverlay').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+
+            // ─── Modal Helpers ───
+            let modalTrigger = null;
+
+            // Opens a dialog, locks scrolling, and moves focus to its close control.
+            function openModal(id) {
+                const modal = document.getElementById(id);
+                if (!modal) return;
+                modalTrigger = document.activeElement;
+                modal.classList.remove('hidden');
+                modal.setAttribute('role', 'dialog');
+                modal.setAttribute('aria-modal', 'true');
+                modal.setAttribute(
+                    'aria-label',
+                    modal.querySelector('h2')?.textContent || 'Dialog',
+                );
+                document.body.style.overflow = 'hidden';
+                requestAnimationFrame(() => modal.querySelector('.modal-close')?.focus());
+            }
+
+            // Closes a dialog, restores scrolling, and returns focus to its trigger.
+            function closeModal(id) {
+                const modal = document.getElementById(id);
+                if (!modal) return;
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                if (modalTrigger instanceof HTMLElement) modalTrigger.focus();
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    const activeModal = document.querySelector('.modal-overlay:not(.hidden)');
+                    if (activeModal) closeModal(activeModal.id);
+                    else closeSidebar();
+                }
+            });
+
+            // ─── Profile Dropdown ───
+            const profileToggle = document.getElementById('profileToggle');
+            const profileDropdown = document.getElementById('profileDropdown');
+
+            profileToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileDropdown.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#profileContainer')) {
+                    profileDropdown.classList.add('hidden');
+                }
+            });
+
+            // ─── Language ───
+            document.getElementById('langToggle').addEventListener('click', () => {
+                openModal('langModal');
+            });
+
+            function selectLanguage(el, name) {
+                document
+                    .querySelectorAll('.lang-option')
+                    .forEach((opt) => opt.classList.remove('active'));
+                el.classList.add('active');
+                const toggle = document.getElementById('langToggle');
+                const code = name.substring(0, 2).toUpperCase();
+                toggle.querySelector('span').textContent = code;
+            }
+
+            // ─── Bottom App Bar Navigation ───
+            function navigateTo(el, page) {
+                document
+                    .querySelectorAll('.bottom-app-bar .bar-item')
+                    .forEach((item) => item.classList.remove('active'));
+                el.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // ─── Slider ───
+            let currentSlide = 0;
+            const totalSlides = 3;
+            let sliderInterval;
+
+            function goToSlide(index) {
+                const track = document.getElementById('sliderTrack');
+                const dots = document.querySelectorAll('#sliderDots span');
+                if (index >= totalSlides) index = 0;
+                if (index < 0) index = totalSlides - 1;
+                currentSlide = index;
+                track.style.transform = `translateX(-${index * 100}%)`;
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === index);
+                });
+            }
+
+            function nextSlide() {
+                goToSlide(currentSlide + 1);
+            }
+
+            document.querySelectorAll('#sliderDots span').forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    clearInterval(sliderInterval);
+                    goToSlide(index);
+                    startSlider();
+                });
+            });
+
+            function startSlider() {
+                clearInterval(sliderInterval);
+                sliderInterval = setInterval(nextSlide, 4500);
+            }
+
+            goToSlide(0);
+            startSlider();
+
+            const sliderContainer = document.getElementById('promoSlider');
+            sliderContainer.addEventListener('mouseenter', () => clearInterval(sliderInterval));
+            sliderContainer.addEventListener('mouseleave', startSlider);
+
+            // ─── Category Scroll ───
+            document.querySelectorAll('.category-scroll .cat-item').forEach((item) => {
+                item.addEventListener('click', function () {
+                    document
+                        .querySelectorAll('.category-scroll .cat-item')
+                        .forEach((i) => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            function scrollCategories() {
+                const container = document.getElementById('categoryScroll');
+                container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' });
+            }
+
+            // ─── Desktop / Mobile ───
+            function checkViewport() {
+                const isDesktop = window.innerWidth >= 1024;
+                document.querySelectorAll('.desktop-only').forEach((el) => {
+                    el.style.display = isDesktop ? 'flex' : 'none';
+                });
+                document.querySelectorAll('.mobile-only').forEach((el) => {
+                    el.style.display = !isDesktop ? 'flex' : 'none';
+                });
+            }
+            checkViewport();
+            window.addEventListener('resize', checkViewport);
+
+            console.log('JUBO88 UI ready — pure dark mode with gold accents.');
+        </script>
+        <script src="/app.js"></script>
+    </body>
+</html>

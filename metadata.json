@@ -1,0 +1,6 @@
+{
+  "name": "JUBO88 Betting Platform",
+  "description": "JUBO88 online gaming, sports betting, live casino, user dashboard, and affiliate platform.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

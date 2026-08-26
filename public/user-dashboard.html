@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>JUBO88 - User Dashboard</title>
+    <link rel="stylesheet" href="/vendor/static-shell.css" />
+    <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css" />
+    <style>
+        /* ── Reset & Base ── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a12;
+            color: #e8e6f0;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #14141f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f5b81b;
+            border-radius: 20px;
+        }
+
+        /* ── Color Variables ── */
+        :root {
+            --gold: #f5b81b;
+            --gold-light: #fdd835;
+            --gold-dark: #d4910f;
+            --gold-glow: rgba(245, 184, 27, 0.2);
+            --gold-glow-strong: rgba(245, 184, 27, 0.35);
+
+            --bg-body: #0a0a12;
+            --bg-card: rgba(18, 18, 32, 0.75);
+            --bg-glass: rgba(18, 18, 32, 0.85);
+            --bg-header: rgba(10, 10, 18, 0.92);
+            --bg-sidebar: rgba(10, 10, 18, 0.98);
+            --bg-input: rgba(255, 255, 255, 0.04);
+            --bg-bottom-bar: rgba(10, 10, 18, 0.92);
+            --bg-modal: rgba(18, 18, 32, 0.92);
+
+            --text-primary: #e8e6f0;
+            --text-secondary: #b8b0d0;
+            --text-muted: #6a6a8a;
+            --text-inverse: #0a0a12;
+
+            --border-color: rgba(245, 184, 27, 0.08);
+            --border-light: rgba(255, 255, 255, 0.04);
+            --border-card: rgba(245, 184, 27, 0.06);
+
+            --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 8px 40px rgba(245, 184, 27, 0.06);
+            --shadow-dropdown: 0 20px 60px rgba(0, 0, 0, 0.5);
+
+            --badge-bg: rgba(245, 184, 27, 0.08);
+            --badge-text: #f5b81b;
+
+            --modal-overlay: rgba(0, 0, 0, 0.7);
+            --footer-border: rgba(255, 255, 255, 0.04);
+
+            --card-radius: 16px;
+            --btn-radius: 12px;
+
+            --gradient-gold: linear-gradient(135deg, #f5b81b, #d4910f);
+            --gradient-gold-reverse: linear-gradient(135deg, #d4910f, #f5b81b);
+        }
+
+        /* ── Glass & Cards ── */
+        .glass {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-card);
+            box-shadow: var(--shadow-card);
+            border-radius: var(--card-radius);
+        }
+        .glass-hover {
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.25s ease;
+        }
+        .glass-hover:hover {
+            border-color: rgba(245, 184, 27, 0.25);
+            box-shadow: var(--shadow-hover);
+        }
+        .card-glow {
+            position: relative;
+        }
+        .card-glow::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(245, 184, 27, 0.08), transparent 70%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        /* ── Badges ── */
+        .badge-gold {
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            padding: 2px 12px;
+            border-radius: 100px;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border: 1px solid rgba(245, 184, 27, 0.1);
+        }
+        .badge-filled {
+            background: var(--gradient-gold);
+            color: #0a0a12;
+            padding: 2px 12px;
+            border-radius: 100px;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .badge-live {
+            background: rgba(245, 184, 27, 0.12);
+            color: #f5b81b;
+            padding: 2px 10px;
+            border-radius: 100px;
+            font-size: 7px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border: 1px solid rgba(245, 184, 27, 0.1);
+            animation: pulse-live 1.8s ease-in-out infinite;
+        }
+        @keyframes pulse-live {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        /* ── Glow ── */
+        .glow-gold {
+            text-shadow: 0 0 40px rgba(245, 184, 27, 0.2);
+        }
+
+        /* ── Buttons ── */
+        .btn-primary {
+            background: var(--gradient-gold);
+            color: #0a0a12;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: var(--btn-radius);
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(245, 184, 27, 0.25);
+        }
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+        .btn-outline {
+            background: transparent;
+            color: #f5b81b;
+            font-weight: 600;
+            padding: 9px 18px;
+            border-radius: var(--btn-radius);
+            border: 1px solid rgba(245, 184, 27, 0.2);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+        .btn-outline:hover {
+            background: rgba(245, 184, 27, 0.06);
+            border-color: rgba(245, 184, 27, 0.4);
+        }
+
+        /* ── Inputs ── */
+        .input-gold {
+            background: var(--bg-input);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+            padding: 12px 16px;
+            border-radius: 12px;
+            width: 100%;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+        }
+        .input-gold:focus {
+            outline: none;
+            border-color: rgba(245, 184, 27, 0.4);
+            box-shadow: 0 0 0 3px rgba(245, 184, 27, 0.06);
+        }
+        .input-gold::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* ── Divider ── */
+        .divider-glow {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(245, 184, 27, 0.08), transparent);
+        }
+
+        /* ── MODALS ── */
+        .modal-overlay {
+            background: var(--modal-overlay);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            animation: fadeIn 0.25s ease;
+        }
+        .modal-content {
+            animation: slideUp 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: var(--bg-modal);
+            border: 1px solid var(--border-card);
+            border-right: 0;
+            border-bottom: 0;
+            box-shadow: var(--shadow-dropdown);
+        }
+        .modal-content.card-glow::before {
+            display: none;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ── Profile Dropdown ── */
+        .profile-dropdown {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: var(--shadow-dropdown);
+            animation: slideUp 0.2s ease;
+            min-width: 200px;
+        }
+        .profile-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            transition: all 0.15s ease;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .profile-dropdown-item:hover {
+            background: rgba(245, 184, 27, 0.08);
+            color: var(--text-primary);
+        }
+        .profile-dropdown-item i {
+            width: 18px;
+            text-align: center;
+            color: rgba(245, 184, 27, 0.5);
+        }
+
+        /* ── Avatar ── */
+        .avatar-ring {
+            border: 2px solid rgba(245, 184, 27, 0.2);
+            box-shadow: 0 0 40px rgba(245, 184, 27, 0.04);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .avatar-ring:hover {
+            border-color: rgba(245, 184, 27, 0.4);
+            box-shadow: 0 0 50px rgba(245, 184, 27, 0.08);
+        }
+
+        /* ── Bottom App Bar ── */
+        .bottom-app-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-bottom-bar);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 6px 0 env(safe-area-inset-bottom, 6px) 0;
+            z-index: 100;
+            height: 64px;
+        }
+        .bottom-app-bar .bar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            color: var(--text-muted);
+            transition: all 0.25s ease;
+            cursor: pointer;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 8px;
+            font-weight: 600;
+            position: relative;
+            border: none;
+            background: transparent;
+            font-family: 'Inter', sans-serif;
+        }
+        .bottom-app-bar .bar-item i {
+            font-size: 16px;
+            transition: all 0.25s ease;
+        }
+        .bottom-app-bar .bar-item.active {
+            color: #f5b81b;
+        }
+        .bottom-app-bar .bar-item.active i {
+            transform: translateY(-2px);
+        }
+        .bottom-app-bar .bar-item .badge-dot {
+            position: absolute;
+            top: 2px;
+            right: 4px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #f5b81b;
+        }
+        .bottom-app-bar .bar-item:hover {
+            color: var(--text-primary);
+        }
+
+        /* ── Sidebar Menu ── */
+        .sidebar-overlay {
+            background: var(--modal-overlay);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            animation: fadeIn 0.25s ease;
+        }
+        .sidebar {
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-right: 1px solid var(--border-color);
+            animation: slideRight 0.3s ease;
+            width: 280px;
+            max-width: 80vw;
+        }
+        @keyframes slideRight {
+            from {
+                transform: translateX(-100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .sidebar-item:hover {
+            background: rgba(245, 184, 27, 0.08);
+            color: var(--text-primary);
+        }
+        .sidebar-item i {
+            width: 20px;
+            text-align: center;
+            color: rgba(245, 184, 27, 0.4);
+        }
+        .sidebar-item.active {
+            color: #f5b81b;
+            background: rgba(245, 184, 27, 0.08);
+        }
+        .sidebar-item.active i {
+            color: #f5b81b;
+        }
+        .user-menu-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 8px; scrollbar-width: thin; }
+        .user-menu-tab { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 7px; min-height: 42px; padding: 9px 13px; border: 1px solid var(--border-light); border-radius: 10px; color: var(--text-secondary); font-size: 12px; font-weight: 600; transition: color .2s ease, border-color .2s ease, background .2s ease; }
+        .user-menu-tab:hover, .user-menu-tab:focus-visible, .user-menu-tab.active { color: #f5b81b; border-color: rgba(245, 184, 27, .28); background: rgba(245, 184, 27, .06); outline: none; }
+
+        /* ── Header ── */
+        .header-glass {
+            background: var(--bg-header);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            border-radius: 14px;
+            padding: 10px 16px;
+        }
+        .logo-text {
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            color: #f5b81b;
+        }
+
+        /* ── Dashboard Specific Styles ── */
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 14px 16px;
+            border: 1px solid var(--border-card);
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            border-color: rgba(245, 184, 27, 0.2);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+        .stat-card .stat-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(245, 184, 27, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f5b81b;
+            font-size: 16px;
+        }
+        .stat-card .stat-value {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+        .stat-card .stat-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, rgba(245, 184, 27, 0.08), rgba(18, 18, 32, 0.95));
+            border: 1px solid rgba(245, 184, 27, 0.12);
+            border-radius: var(--card-radius);
+            padding: 20px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(245, 184, 27, 0.04), transparent 70%);
+            border-radius: 50%;
+        }
+        .balance-card .balance-amount {
+            font-size: 28px;
+            font-weight: 900;
+            color: #f5b81b;
+            letter-spacing: -1px;
+        }
+        .balance-card .balance-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            transition: background 0.2s ease;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        #activityList[data-loading] .transaction-item {
+            display: none;
+        }
+        #activityList[data-loading]::before {
+            content: 'Loading authoritative account activityâ€¦';
+            display: block;
+            padding: 1rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+        .transaction-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .transaction-item .tx-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(245, 184, 27, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f5b81b;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        .transaction-item .tx-details {
+            flex: 1;
+        }
+        .transaction-item .tx-details .tx-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .transaction-item .tx-details .tx-meta {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+        .transaction-item .tx-amount {
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .transaction-item .tx-amount.positive {
+            color: #4ade80;
+        }
+        .transaction-item .tx-amount.negative {
+            color: #f87171;
+        }
+        .transaction-item .tx-amount.pending {
+            color: #fbbf24;
+        }
+
+        .quick-action-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .quick-action-grid .qa-item {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 14px 8px;
+            text-align: center;
+            border: 1px solid var(--border-card);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .quick-action-grid .qa-item:hover {
+            border-color: rgba(245, 184, 27, 0.2);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        .quick-action-grid .qa-item i {
+            font-size: 20px;
+            color: #f5b81b;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .quick-action-grid .qa-item span {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title .bar {
+            width: 3px;
+            height: 18px;
+            border-radius: 4px;
+            background: var(--gradient-gold);
+        }
+        .see-all {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .see-all:hover {
+            color: #f5b81b;
+        }
+
+        /* ── Desktop Only / Mobile Only ── */
+        .desktop-only {
+            display: none !important;
+        }
+        .mobile-only {
+            display: flex !important;
+        }
+        @media (min-width: 1024px) {
+            .desktop-only {
+                display: flex !important;
+            }
+            .mobile-only {
+                display: none !important;
+            }
+            body {
+                padding-bottom: 0;
+            }
+            .bottom-app-bar {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .balance-card .balance-amount {
+                font-size: 22px;
+            }
+            .stat-card .stat-value {
+                font-size: 15px;
+            }
+            .quick-action-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!-- ═══ SIDEBAR (Mobile Menu) ═══ -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <div id="sidebarOverlay" class="fixed inset-0 z-[200] sidebar-overlay hidden" onclick="closeSidebar()">
+        <div class="sidebar h-full overflow-y-auto" onclick="event.stopPropagation()">
+            <div class="p-4 border-b border-[var(--border-light)] flex items-center justify-between">
+                <span class="logo-text text-2xl">JUBO88</span>
+                <button onclick="closeSidebar()" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] text-xl">&times;</button>
+            </div>
+            <div class="p-3 space-y-1">
+                <button class="sidebar-item active w-full" onclick="goToUserArea('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
+                <button class="sidebar-item w-full" onclick="goToUserArea('deposit')"><i class="fas fa-coins"></i> Deposit</button>
+                <button class="sidebar-item w-full" onclick="goToUserArea('withdraw')"><i class="fas fa-money-bill-wave"></i> Withdraw</button>
+                <button class="sidebar-item w-full" onclick="goToUserArea('history')"><i class="fas fa-history"></i> History</button>
+                <button class="sidebar-item w-full" onclick="goToUserArea('logs')"><i class="fas fa-list-alt"></i> Logs</button>
+                <button class="sidebar-item w-full" onclick="goToUserArea('profile')"><i class="fas fa-user-circle"></i> My Profile</button>
+                <button class="sidebar-item w-full" onclick="goToUserArea('password')"><i class="fas fa-key"></i> Password Change</button>
+                <button class="sidebar-item w-full" onclick="goToUserArea('support')"><i class="fas fa-headset"></i> Support</button>
+            </div>
+            <div class="p-4 border-t border-[var(--border-light)] mt-4">
+                <div class="flex items-center gap-3 text-sm text-[var(--text-muted)]">
+                    <i class="fas fa-shield-alt text-[#f5b81b]"></i>
+                    <span>v2.0 · Secure</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!-- ═══ MAIN WRAPPER ═══ -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <div class="max-w-7xl mx-auto px-4 py-3 space-y-4 min-h-screen pb-24 lg:pb-6">
+
+        <!-- ═══ HEADER ═══ -->
+        <header class="header-glass flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <button onclick="openSidebar()" class="mobile-only text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors text-lg">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <span class="logo-text">JUBO88</span>
+                <span class="badge-gold hidden sm:inline">Dashboard</span>
+                <nav class="desktop-only items-center gap-5 ml-4 text-sm font-medium text-[var(--text-secondary)]">
+                    <button onclick="window.top.location.href='/'" class="hover:text-[var(--text-primary)] transition-colors">Home</button>
+                    <button onclick="window.top.location.href='/#categoryScroll'" class="hover:text-[var(--text-primary)] transition-colors">Category List</button>
+                    <button onclick="window.top.location.href='/#gameGrid'" class="hover:text-[var(--text-primary)] transition-colors">Games</button>
+                    <button onclick="window.top.location.href='/'" class="hover:text-[var(--text-primary)] transition-colors">Live</button>
+                    <button onclick="window.top.location.href='/'" class="hover:text-[var(--text-primary)] transition-colors">Promotions</button>
+                </nav>
+            </div>
+
+            <div class="flex items-center gap-2 relative">
+                <!-- Notification Bell -->
+                <button class="relative text-[var(--text-secondary)] hover:text-[#f5b81b] transition-colors px-2 py-1">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#f5b81b] text-[8px] font-bold text-[#0a0a12] rounded-full flex items-center justify-center">3</span>
+                </button>
+
+                <!-- Profile / Auth -->
+                <div class="relative" id="profileContainer">
+                    <button id="profileToggle" class="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-[rgba(245,184,27,0.04)] transition-colors">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[#f5e6b0] to-[#e8d080] border border-[rgba(245,184,27,0.15)] flex items-center justify-center text-[12px] font-bold text-[#b87a00] avatar-ring">
+                            JD
+                        </div>
+                        <i class="fas fa-chevron-down text-[7px] text-[var(--text-muted)]"></i>
+                    </button>
+                    <div id="profileDropdown" class="profile-dropdown absolute right-0 top-full mt-2 w-56 hidden z-50 p-1.5">
+                        <div class="px-3 py-2.5 border-b border-[var(--border-light)]">
+                            <p id="profileMenuName" class="text-sm font-semibold text-[var(--text-primary)]">Loading...</p>
+                            <p id="profileMenuEmail" class="text-[10px] text-[var(--text-muted)]"></p>
+                        </div>
+                        <div class="py-1">
+                            <button class="profile-dropdown-item w-full" onclick="goToUserArea('profile')"><i class="fas fa-user-circle"></i> My Profile</button>
+                            <button class="profile-dropdown-item w-full" onclick="goToUserArea('wallet')"><i class="fas fa-wallet"></i> Wallet</button>
+                            <button class="profile-dropdown-item w-full" onclick="goToUserArea('history')"><i class="fas fa-history"></i> Betting History</button>
+                            <button class="profile-dropdown-item w-full" onclick="goToUserArea('password')"><i class="fas fa-cog"></i> Settings</button>
+                        </div>
+                        <div class="border-t border-[var(--border-light)] pt-1">
+                            <button class="profile-dropdown-item text-[#f87171] w-full" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ═══ WELCOME SECTION ═══ -->
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-xl font-bold text-[var(--text-primary)]">Welcome back, <span id="dashboardUserName">User</span>!</h1>
+                <p class="text-[12px] text-[var(--text-muted)]">Here's your betting summary for today</p>
+            </div>
+            <span class="badge-filled text-[8px]">🟢 Online</span>
+        </div>
+
+        <!-- ═══ BALANCE CARD ═══ -->
+        <div class="balance-card glass-hover">
+            <div class="relative z-10">
+                <div class="flex items-center justify-between">
+                    <span class="balance-label">Available Balance</span>
+                    <span class="badge-gold text-[8px]">Verified</span>
+                </div>
+                <div class="balance-amount mt-1" id="walletBalance">Loading...</div>
+                <div class="flex items-center gap-6 mt-3">
+                    <div>
+                        <span class="text-[10px] text-[var(--text-muted)]">Total Invested</span>
+                        <span class="block text-sm font-bold text-[var(--text-primary)]" id="walletInvested">—</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-[var(--text-muted)]">Pending Requests</span>
+                        <span class="block text-sm font-bold text-[#fbbf24]" id="walletPending">—</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-[var(--text-muted)]">Total Won</span>
+                        <span class="block text-sm font-bold text-[var(--text-primary)]" id="walletWon">—</span>
+                    </div>
+                </div>
+                <div class="flex gap-3 mt-4">
+                    <button onclick="goToUserArea('deposit')" class="btn-primary flex-1 text-sm py-2.5">Deposit</button>
+                    <button onclick="goToUserArea('withdraw')" class="btn-outline flex-1 text-sm py-2.5 text-center">Withdraw</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ USER MENU ═══ -->
+        <nav class="user-menu-tabs glass" aria-label="User account menu">
+            <button class="user-menu-tab active" onclick="goToUserArea('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
+            <button class="user-menu-tab" onclick="goToUserArea('deposit')"><i class="fas fa-coins"></i> Deposit</button>
+            <button class="user-menu-tab" onclick="goToUserArea('withdraw')"><i class="fas fa-money-bill-wave"></i> Withdraw</button>
+            <button class="user-menu-tab" onclick="goToUserArea('history')"><i class="fas fa-history"></i> History</button>
+            <button class="user-menu-tab" onclick="goToUserArea('deposit-history')"><i class="fas fa-receipt"></i> Deposit History</button>
+            <button class="user-menu-tab" onclick="goToUserArea('withdraw-history')"><i class="fas fa-file-invoice-dollar"></i> Withdraw History</button>
+            <button class="user-menu-tab" onclick="goToUserArea('logs')"><i class="fas fa-list-alt"></i> Logs</button>
+            <button class="user-menu-tab" onclick="goToUserArea('wallet')"><i class="fas fa-wallet"></i> Wallet</button>
+            <button class="user-menu-tab" onclick="goToUserArea('profile')"><i class="fas fa-user-circle"></i> My Profile</button>
+            <button class="user-menu-tab" onclick="goToUserArea('password')"><i class="fas fa-key"></i> Password Change</button>
+            <button class="user-menu-tab" onclick="goToUserArea('support')"><i class="fas fa-headset"></i> Support</button>
+        </nav>
+
+        <!-- ═══ STATISTICS ROW ═══ -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="stat-card">
+                <div class="flex items-center gap-3">
+                    <div class="stat-icon"><i class="fas fa-coins"></i></div>
+                    <div>
+                        <div class="stat-value" id="statPlayed">—</div>
+                        <div class="stat-label">Total Bets</div>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="flex items-center gap-3">
+                    <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+                    <div>
+                        <div class="stat-value text-[#4ade80]" id="statWon">—</div>
+                        <div class="stat-label">Won</div>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="flex items-center gap-3">
+                    <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+                    <div>
+                        <div class="stat-value text-[#f87171]" id="statLost">—</div>
+                        <div class="stat-label">Lost</div>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="flex items-center gap-3">
+                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                    <div>
+                        <div class="stat-value text-[#4ade80]" id="statProfit">—</div>
+                        <div class="stat-label">Profit</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ QUICK ACTIONS ═══ -->
+        <div>
+            <div class="flex items-center justify-between mb-3">
+                <span class="section-title"><span class="bar"></span> Quick Actions</span>
+            </div>
+            <div class="quick-action-grid">
+                <div class="qa-item" onclick="openModal('depositModal')">
+                    <i class="fas fa-arrow-down"></i>
+                    <span>Deposit</span>
+                </div>
+                <div class="qa-item" onclick="openModal('withdrawModal')">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>Withdraw</span>
+                </div>
+                <div class="qa-item" onclick="window.location.href='#'">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Play Now</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ RECENT ACTIVITY ═══ -->
+        <div id="recentActivity">
+            <div class="flex items-center justify-between mb-3">
+                <span class="section-title"><span class="bar"></span> Recent Activity</span>
+                <span class="see-all">View All <i class="fas fa-arrow-right text-[10px]"></i></span>
+            </div>
+            <div class="glass p-3 rounded-xl card-glow" id="activityList" data-loading="true" aria-live="polite">
+                <!-- Transaction 1 -->
+                <div class="transaction-item">
+                    <div class="tx-icon"><i class="fas fa-trophy"></i></div>
+                    <div class="tx-details">
+                        <div class="tx-name">Cricket T20 - India vs Australia</div>
+                        <div class="tx-meta">Today, 02:30 PM • Bet ID: #BET-1023</div>
+                    </div>
+                    <div class="tx-amount positive">+₹2,500</div>
+                </div>
+                <!-- Transaction 2 -->
+                <div class="transaction-item">
+                    <div class="tx-icon"><i class="fas fa-futbol"></i></div>
+                    <div class="tx-details">
+                        <div class="tx-name">Football - Man Utd vs Chelsea</div>
+                        <div class="tx-meta">Today, 12:15 PM • Bet ID: #BET-1022</div>
+                    </div>
+                    <div class="tx-amount negative">-₹1,000</div>
+                </div>
+                <!-- Transaction 3 -->
+                <div class="transaction-item">
+                    <div class="tx-icon"><i class="fas fa-plus-circle"></i></div>
+                    <div class="tx-details">
+                        <div class="tx-name">Deposit via UPI</div>
+                        <div class="tx-meta">Today, 10:00 AM • Transaction ID: #TXN-8821</div>
+                    </div>
+                    <div class="tx-amount positive">+₹10,000</div>
+                </div>
+                <!-- Transaction 4 -->
+                <div class="transaction-item">
+                    <div class="tx-icon"><i class="fas fa-spinner"></i></div>
+                    <div class="tx-details">
+                        <div class="tx-name">Slot Game - Mega Moolah</div>
+                        <div class="tx-meta">Yesterday, 11:45 PM • Bet ID: #BET-1021</div>
+                    </div>
+                    <div class="tx-amount pending">Pending</div>
+                </div>
+                <!-- Transaction 5 -->
+                <div class="transaction-item">
+                    <div class="tx-icon"><i class="fas fa-trophy"></i></div>
+                    <div class="tx-details">
+                        <div class="tx-name">IPL - CSK vs MI</div>
+                        <div class="tx-meta">Yesterday, 08:00 PM • Bet ID: #BET-1020</div>
+                    </div>
+                    <div class="tx-amount positive">+₹5,200</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ UPCOMING MATCHES ═══ -->
+        <div>
+            <div class="flex items-center justify-between mb-3">
+                <span class="section-title"><span class="bar"></span> Upcoming Matches</span>
+                <span class="see-all">View All <i class="fas fa-arrow-right text-[10px]"></i></span>
+            </div>
+            <div class="glass p-4 rounded-xl card-glow space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">🏏</span>
+                        <div>
+                            <div class="text-sm font-semibold text-[var(--text-primary)]">India vs Australia</div>
+                            <div class="text-[10px] text-[var(--text-muted)]">T20 World Cup · Match 23</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs font-bold text-[#f5b81b]">08:30 PM</div>
+                        <div class="text-[9px] text-[var(--text-muted)]">Today</div>
+                    </div>
+                </div>
+                <div class="divider-glow"></div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">⚽</span>
+                        <div>
+                            <div class="text-sm font-semibold text-[var(--text-primary)]">Man Utd vs Chelsea</div>
+                            <div class="text-[10px] text-[var(--text-muted)]">Premier League</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs font-bold text-[#f5b81b]">11:00 PM</div>
+                        <div class="text-[9px] text-[var(--text-muted)]">Today</div>
+                    </div>
+                </div>
+                <div class="divider-glow"></div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">🏀</span>
+                        <div>
+                            <div class="text-sm font-semibold text-[var(--text-primary)]">Lakers vs Warriors</div>
+                            <div class="text-[10px] text-[var(--text-muted)]">NBA · Playoffs</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs font-bold text-[#f5b81b]">06:30 AM</div>
+                        <div class="text-[9px] text-[var(--text-muted)]">Tomorrow</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ FOOTER ═══ -->
+        <footer class="footer-glow border-t border-[var(--footer-border)] bg-[var(--bg-card)] backdrop-blur-[6px] rounded-2xl px-4 py-5 mt-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <h4 class="text-[var(--text-muted)] text-[9px] uppercase tracking-[0.15em] font-semibold mb-2 flex items-center gap-2">
+                        <i class="fas fa-link text-[10px] text-[#f5b81b]"></i> Quick Links
+                    </h4>
+                    <a href="/" class="flex items-center gap-2 text-[var(--text-secondary)] hover:text-[#f5b81b] transition-colors text-[12px] font-medium py-1.5 no-underline"><i class="fas fa-home w-4 text-center text-[rgba(245,184,27,0.4)]"></i> Home</a>
+                    <a href="/games" class="flex items-center gap-2 text-[var(--text-secondary)] hover:text-[#f5b81b] transition-colors text-[12px] font-medium py-1.5 no-underline"><i class="fas fa-gamepad w-4 text-center text-[rgba(245,184,27,0.4)]"></i> Games</a>
+                    <a href="/cricket" class="flex items-center gap-2 text-[var(--text-secondary)] hover:text-[#f5b81b] transition-colors text-[12px] font-medium py-1.5 no-underline"><i class="fas fa-trophy w-4 text-center text-[rgba(245,184,27,0.4)]"></i> Live Scores</a>
+                </div>
+                <div>
+                    <h4 class="text-[var(--text-muted)] text-[9px] uppercase tracking-[0.15em] font-semibold mb-2 flex items-center gap-2">
+                        <i class="fas fa-gavel text-[10px] text-[#f5b81b]"></i> Legal
+                    </h4>
+                    <a href="/terms" class="flex items-center gap-2 text-[var(--text-secondary)] hover:text-[#f5b81b] transition-colors text-[12px] font-medium py-1.5 no-underline"><i class="fas fa-file-contract w-4 text-center text-[rgba(245,184,27,0.4)]"></i> Terms &amp; Conditions</a>
+                    <a href="/privacy" class="flex items-center gap-2 text-[var(--text-secondary)] hover:text-[#f5b81b] transition-colors text-[12px] font-medium py-1.5 no-underline"><i class="fas fa-shield-alt w-4 text-center text-[rgba(245,184,27,0.4)]"></i> Privacy Policy</a>
+                    <a href="/responsible-gaming" class="flex items-center gap-2 text-[var(--text-secondary)] hover:text-[#f5b81b] transition-colors text-[12px] font-medium py-1.5 no-underline"><i class="fas fa-user-shield w-4 text-center text-[rgba(245,184,27,0.4)]"></i> Responsible Gaming</a>
+                </div>
+            </div>
+
+            <div class="divider-glow my-3"></div>
+
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-2 pt-2 text-[10px] text-[var(--text-muted)] border-t border-[var(--footer-border)]">
+                <span class="font-medium">© 2026 JUBO88 · All rights reserved</span>
+                <div class="flex items-center gap-4">
+                    <span class="flex items-center gap-1.5 font-medium"><i class="fas fa-lock text-[#f5b81b] opacity-60"></i> Secure</span>
+                    <span class="flex items-center gap-1.5 font-medium"><i class="fas fa-check-circle text-[#f5b81b] opacity-60"></i> Fair</span>
+                    <span class="flex items-center gap-1.5 font-medium"><i class="fas fa-smile text-[#f5b81b] opacity-60"></i> Fun</span>
+                    <span class="flex items-center gap-1.5 font-medium"><i class="fas fa-headset text-[#f5b81b] opacity-60"></i> 24/7</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!-- ═══ BOTTOM APP BAR (Mobile) ═══ -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <nav class="bottom-app-bar mobile-only">
+        <button class="bar-item" onclick="navigateTo(this, 'home')">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </button>
+        <button class="bar-item active" onclick="navigateTo(this, 'dashboard')">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </button>
+        <button class="bar-item" onclick="navigateTo(this, 'live')">
+            <i class="fas fa-trophy"></i>
+            <span>Live</span>
+            <span class="badge-dot"></span>
+        </button>
+        <button class="bar-item" onclick="navigateTo(this, 'wallet')">
+            <i class="fas fa-wallet"></i>
+            <span>Wallet</span>
+        </button>
+        <button class="bar-item" onclick="navigateTo(this, 'profile')">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </button>
+    </nav>
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!-- ═══ MODALS ═══ -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+
+    <!-- ─── DEPOSIT ─── -->
+    <div id="depositModal" class="fixed inset-0 z-[300] flex items-center justify-center px-4 modal-overlay hidden" onclick="if(event.target===this) closeModal('depositModal')">
+        <div class="modal-content glass rounded-2xl p-6 w-full max-w-sm card-glow">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-[var(--text-primary)]">Deposit Funds</h2>
+                <button onclick="closeModal('depositModal')" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors text-xl">&times;</button>
+            </div>
+            <p class="text-[13px] text-[var(--text-secondary)] mb-5">Add money to your JUBO88 wallet</p>
+            <form id="depositForm">
+                <div class="space-y-3.5">
+                    <input name="amount" type="number" min="0.01" step="0.01" placeholder="Enter amount" class="input-gold" required />
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" class="py-2 rounded-lg border border-[var(--border-light)] text-xs font-semibold text-[var(--text-secondary)] hover:border-[#f5b81b] hover:text-[#f5b81b] transition-all">₹1,000</button>
+                        <button type="button" class="py-2 rounded-lg border border-[var(--border-light)] text-xs font-semibold text-[var(--text-secondary)] hover:border-[#f5b81b] hover:text-[#f5b81b] transition-all">₹5,000</button>
+                        <button type="button" class="py-2 rounded-lg border border-[var(--border-light)] text-xs font-semibold text-[var(--text-secondary)] hover:border-[#f5b81b] hover:text-[#f5b81b] transition-all">₹10,000</button>
+                    </div>
+                    <select name="method" class="input-gold" required><option value="">Loading payment methods...</option></select>
+                    <p class="api-message text-xs" aria-live="polite"></p>
+                    <button type="submit" class="btn-primary w-full">Deposit Now</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ─── WITHDRAW ─── -->
+    <div id="withdrawModal" class="fixed inset-0 z-[300] flex items-center justify-center px-4 modal-overlay hidden" onclick="if(event.target===this) closeModal('withdrawModal')">
+        <div class="modal-content glass rounded-2xl p-6 w-full max-w-sm card-glow">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-[var(--text-primary)]">Withdraw Funds</h2>
+                <button onclick="closeModal('withdrawModal')" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors text-xl">&times;</button>
+            </div>
+            <p class="text-[13px] text-[var(--text-secondary)] mb-5">Withdraw money from your JUBO88 wallet</p>
+            <form id="withdrawForm">
+                <div class="space-y-3.5">
+                    <input name="amount" type="number" min="0.01" step="0.01" placeholder="Enter amount" class="input-gold" required />
+                    <div class="flex items-center justify-between text-xs text-[var(--text-secondary)]">
+                        <span>Available: <span id="withdrawAvailable">—</span></span>
+                    </div>
+                    <select name="method_code" class="input-gold" required><option value="">Loading withdrawal methods...</option></select>
+                    <div id="withdrawDynamicFields" class="space-y-3"></div>
+                    <p class="api-message text-xs" aria-live="polite"></p>
+                    <button type="submit" class="btn-primary w-full">Withdraw Now</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!-- ═══ JAVASCRIPT ═══ -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <div id="accountPanelModal" class="fixed inset-0 z-[300] flex items-center justify-center px-4 modal-overlay hidden" onclick="if(event.target===this) closeModal('accountPanelModal')">
+        <div class="modal-content glass rounded-2xl p-6 w-full max-w-md card-glow">
+            <div class="flex items-center justify-between mb-4">
+                <h2 id="accountPanelTitle" class="text-xl font-bold text-[var(--text-primary)]">User account</h2>
+                <button onclick="closeModal('accountPanelModal')" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] text-xl" aria-label="Close">&times;</button>
+            </div>
+            <div id="accountPanelText" class="text-sm text-[var(--text-secondary)]"></div>
+        </div>
+    </div>
+
+    <script>
+        // ─── Sidebar ───
+        function openSidebar() {
+            document.getElementById('sidebarOverlay').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebarOverlay').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function goToUserArea(destination) {
+            closeSidebar();
+            if (destination === 'dashboard') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+            if (destination === 'deposit' || destination === 'withdraw') {
+                openModal(destination + 'Modal');
+                return;
+            }
+            if (destination === 'history' || destination === 'logs') {
+                document.getElementById('recentActivity').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return;
+            }
+            const panels = {
+                profile: ['My Profile', 'Your profile details will be loaded here from the Laravel profile API.'],
+                password: ['Password Change', 'The secure password-change form will be available here without leaving the React user dashboard.'],
+                support: ['Support', 'Your support conversations and new-ticket form will be available here without opening the Laravel site.']
+            };
+            const panel = panels[destination];
+            if (!panel) return;
+            document.getElementById('accountPanelTitle').textContent = panel[0];
+            document.getElementById('accountPanelText').textContent = panel[1];
+            openModal('accountPanelModal');
+        }
+
+        // ─── Modal Helpers ───
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay:not(.hidden)').forEach(el => {
+                    el.classList.add('hidden');
+                });
+                document.body.style.overflow = 'auto';
+                closeSidebar();
+            }
+        });
+
+        // ─── Profile Dropdown ───
+        const profileToggle = document.getElementById('profileToggle');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        profileToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#profileContainer')) {
+                profileDropdown.classList.add('hidden');
+            }
+        });
+
+        // ─── Bottom App Bar Navigation ───
+        function navigateTo(el, page) {
+            document.querySelectorAll('.bottom-app-bar .bar-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ─── Desktop / Mobile ───
+        function checkViewport() {
+            const isDesktop = window.innerWidth >= 1024;
+            document.querySelectorAll('.desktop-only').forEach(el => {
+                el.style.display = isDesktop ? 'flex' : 'none';
+            });
+            document.querySelectorAll('.mobile-only').forEach(el => {
+                el.style.display = !isDesktop ? 'flex' : 'none';
+            });
+        }
+        checkViewport();
+        window.addEventListener('resize', checkViewport);
+
+        console.log('JUBO88 Dashboard ready.');
+    </script>
+    <script src="/user-dashboard-app.js"></script>
+
+</body>
+</html>
