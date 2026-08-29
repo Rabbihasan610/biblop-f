@@ -74,12 +74,15 @@
             const data = await requestJson('/api/public/settings');
             const setting = data.general_setting ?? {};
             const branding = data.branding ?? {};
-            const siteName = String(setting.site_name || 'JUBO88');
+            const siteName = String(setting.site_name || 'Jaba9');
             document.title = `${siteName} - Betting Platform`;
             document.documentElement.dataset.currency = String(setting.cur_text || '');
             document.documentElement.dataset.currencySymbol = String(setting.cur_sym || '');
             document.querySelectorAll('.currency-label').forEach((node) => {
                 node.textContent = `${setting.cur_sym || ''} ${setting.cur_text || ''}`.trim();
+            });
+            document.querySelectorAll('.footer-site-name').forEach((node) => {
+                node.textContent = siteName;
             });
             document.querySelectorAll('.logo-text').forEach((node) => {
                 if (!branding.logo) return void (node.textContent = siteName);
@@ -111,10 +114,11 @@
 
     /** Renders one escaped catalogue game card. */
     function gameCard(game) {
-        return `<a class="game-card" href="${escapeHtml(game.launch_url || '#')}" data-game="${escapeHtml(game.id)}"><img src="${escapeHtml(game.image_url || '/assets/images/default.png')}" alt="${escapeHtml(game.name)}" loading="lazy"><div class="game-name">${escapeHtml(game.name)}</div></a>`;
+        const fallbackUrl = `/game/${encodeURIComponent(game.slug || game.id)}?id=${encodeURIComponent(game.id)}`;
+        return `<a class="game-card" href="${escapeHtml(game.launch_url || fallbackUrl)}" data-game="${escapeHtml(game.id)}"><img src="${escapeHtml(game.image_url || '/assets/images/games/default-small.svg')}" alt="${escapeHtml(game.name)}" loading="lazy"><div class="game-name">${escapeHtml(game.name)}</div></a>`;
     }
 
-    /** Loads categories, providers, and games from the public API. */
+    /** Loads clickable categories and games from the public API. */
     async function loadCatalogue() {
         try {
             const [home, categories] = await Promise.all([
@@ -122,51 +126,15 @@
                 requestJson('/api/public/categories'),
             ]);
             const categoriesNode = select('#categoryScroll');
-            const providersNode = select('#providerMega');
             const gamesNode = select('#gameGrid');
             const recentGamesNode = select('#recentGameGrid');
-            let selectedCategory = '';
-            let selectedProvider = '';
-
-            /** Reloads games using the currently selected category and provider. */
-            async function reloadGames() {
-                const query = new URLSearchParams();
-                if (selectedCategory) query.set('category', selectedCategory);
-                if (selectedProvider) query.set('provider', selectedProvider);
-                query.set('per_page', '20');
-                const games = await requestJson(`/api/public/games?${query}`);
-                gamesNode.innerHTML = games.length
-                    ? games.map(gameCard).join('')
-                    : '<p class="col-span-full text-center py-8">No games match these filters.</p>';
-            }
             if (categoriesNode)
                 categoriesNode.innerHTML = categories
                     .map(
                         (item) =>
-                            `<button class="cat-item" data-category="${escapeHtml(item.slug)}">${escapeHtml(item.icon || '🎮')} ${escapeHtml(item.name)}</button>`,
+                            `<a class="cat-item" href="/category/${encodeURIComponent(item.slug)}">${escapeHtml(item.icon || '🎮')} ${escapeHtml(item.name)}</a>`,
                     )
                     .join('');
-            /** Opens the provider mega menu for one category. */
-            function showProviders(category) {
-                if (!providersNode || !categoriesNode || !category) return;
-                selectedCategory = category.slug;
-                selectedProvider = '';
-                categoriesNode.querySelectorAll('[data-category]').forEach((button) => {
-                    const active = button.dataset.category === category.slug;
-                    button.classList.toggle('active', active);
-                    button.setAttribute('aria-expanded', String(active));
-                });
-                providersNode.innerHTML = category.providers?.length
-                    ? [
-                          '<button type="button" class="active" data-provider="">All Providers</button>',
-                          ...category.providers.map(
-                              (provider) =>
-                                  `<button type="button" data-provider="${escapeHtml(provider.slug)}">${escapeHtml(provider.name)}</button>`,
-                          ),
-                      ].join('')
-                    : '<p class="catalogue-empty">No providers are available in this category.</p>';
-                providersNode.classList.add('open');
-            }
             if (gamesNode)
                 gamesNode.innerHTML = home.popular_games?.length
                     ? home.popular_games.map(gameCard).join('')
@@ -175,26 +143,6 @@
                 recentGamesNode.innerHTML = home.recent_clicked_games?.length
                     ? home.recent_clicked_games.map(gameCard).join('')
                     : '<p class="col-span-full text-center py-8">No recently clicked games yet.</p>';
-            categoriesNode?.addEventListener('click', async (event) => {
-                const button = event.target.closest('[data-category]');
-                if (!button || !gamesNode) return;
-                showProviders(categories.find((item) => item.slug === button.dataset.category));
-                await reloadGames();
-            });
-            categoriesNode?.addEventListener('pointerover', (event) => {
-                const button = event.target.closest('[data-category]');
-                showProviders(categories.find((item) => item.slug === button?.dataset.category));
-            });
-            providersNode?.addEventListener('click', async (event) => {
-                const button = event.target.closest('[data-provider]');
-                if (!button || !gamesNode) return;
-                selectedProvider = button.dataset.provider || '';
-                providersNode.querySelectorAll('[data-provider]').forEach((providerButton) => {
-                    providerButton.classList.toggle('active', providerButton === button);
-                });
-                await reloadGames();
-            });
-
             /** Records clicks and immediately refreshes the recent unique game list. */
             document.addEventListener('click', async (event) => {
                 const card = event.target.closest('[data-game]');
@@ -307,6 +255,17 @@
         initializeAuthentication();
         initializePasswordToggles();
         initializePasswordRecovery();
+        document.querySelectorAll('.live-score-card').forEach((card) => {
+            card.setAttribute('role', 'link');
+            card.setAttribute('tabindex', '0');
+            card.addEventListener('click', () => (window.top.location.href = '/sportsbook'));
+            card.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    window.top.location.href = '/sportsbook';
+                }
+            });
+        });
     }
 
     document.addEventListener('DOMContentLoaded', initializeHomepage);

@@ -1,9 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './public/jubo88.html',
+    './public/index.html',
     './public/user-dashboard.html',
-    './public/jubo88-app.js',
+    './public/app.js',
     './public/user-dashboard-app.js',
   ],
   theme: { extend: {} },

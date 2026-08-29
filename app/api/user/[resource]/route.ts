@@ -24,7 +24,7 @@ const routes: Record<string, { path: string; methods: string[] }> = {
 async function proxy(request: NextRequest, resource: string) {
   const route = routes[resource];
   if (!route || !route.methods.includes(request.method)) return NextResponse.json({ status: 'error', message: 'Not found' }, { status: 404 });
-  const token = (await cookies()).get('jubo88_token')?.value;
+  const token = (await cookies()).get('jaba9_token')?.value;
   if (!token) return NextResponse.json({ status: 'error', message: 'Your session has ended. Please sign in again.' }, { status: 401 });
   try {
     const multipart = request.method !== 'GET' && request.headers.get('content-type')?.startsWith('multipart/form-data');

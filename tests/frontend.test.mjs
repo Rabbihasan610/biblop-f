@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const page = fs.readFileSync(new URL('../app/page.tsx', import.meta.url), 'utf8');
+const rootLayout = fs.readFileSync(new URL('../app/layout.tsx', import.meta.url), 'utf8');
 const source = fs.readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
 const homepageIntegration = fs.readFileSync(new URL('../public/app.js', import.meta.url), 'utf8');
 const dashboardPage = fs.readFileSync(
@@ -39,7 +40,32 @@ const affiliateProxy = fs.readFileSync(
     new URL('../app/api/affiliate/[resource]/route.ts', import.meta.url),
     'utf8',
 );
+const userArea = fs.readFileSync(new URL('../components/UserArea.tsx', import.meta.url), 'utf8');
+const userRoute = fs.readFileSync(new URL('../app/user/[section]/page.tsx', import.meta.url), 'utf8');
+const affiliateArea = fs.readFileSync(new URL('../components/AffiliateArea.tsx', import.meta.url), 'utf8');
+const affiliateRoute = fs.readFileSync(new URL('../app/affi/[section]/page.tsx', import.meta.url), 'utf8');
+const catalogue = fs.readFileSync(new URL('../components/CatalogueExplorer.tsx', import.meta.url), 'utf8');
+const gamePlayer = fs.readFileSync(new URL('../components/GamePlayer.tsx', import.meta.url), 'utf8');
+const siteShell = fs.readFileSync(new URL('../components/SiteShell.tsx', import.meta.url), 'utf8');
+const fallbackData = fs.readFileSync(new URL('../lib/fallback-data.ts', import.meta.url), 'utf8');
+const globalStyles = fs.readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8');
 const upstreamFetch = fs.readFileSync(new URL('../lib/upstream-fetch.ts', import.meta.url), 'utf8');
+const publicProxy = fs.readFileSync(
+    new URL('../app/api/public/[resource]/route.ts', import.meta.url),
+    'utf8',
+);
+const sharedShellRoutes = [
+    '../app/games/page.tsx',
+    '../app/categories/page.tsx',
+    '../app/providers/page.tsx',
+    '../app/category/[slug]/page.tsx',
+    '../app/provider/[slug]/page.tsx',
+    '../app/game/[slug]/page.tsx',
+    '../app/user/[section]/page.tsx',
+    '../app/affi/[section]/page.tsx',
+    '../app/[...slug]/page.tsx',
+    '../app/not-found.tsx',
+].map(file => fs.readFileSync(new URL(file, import.meta.url), 'utf8'));
 const nextConfig = fs.readFileSync(new URL('../next.config.mjs', import.meta.url), 'utf8');
 const packageJson = JSON.parse(
     fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'),
@@ -47,6 +73,10 @@ const packageJson = JSON.parse(
 
 test('home renders the supplied standalone document shell', () =>
     assert.match(page, /src="\/index\.html"/));
+test('root document tolerates attributes injected before React hydration', () => {
+    assert.match(rootLayout, /<html lang="en" suppressHydrationWarning>/);
+    assert.match(rootLayout, /<body suppressHydrationWarning>/);
+});
 test('homepage retains its structure and loads the API integration', () => {
     assert.match(source, /^<!doctype html>/i);
     assert.match(source, /id="promoSlider"/);
@@ -66,7 +96,7 @@ test('homepage uses the requested flat visual system without rendered radius or 
 });
 test('homepage header and modal controls are fixed and accessible', () => {
     assert.match(source, /\.header-glass[\s\S]*position: fixed/);
-    assert.match(source, /\.header-glass \*[\s\S]*border-color: transparent !important/);
+    assert.match(source, /\.header-glass a,[\s\S]*\.header-glass button[\s\S]*border-color: transparent/);
     assert.match(source, /body > \.max-w-7xl[\s\S]*padding-top: 86px/);
     assert.equal((source.match(/class="modal-close"/g) || []).length, 4);
     assert.equal((source.match(/aria-label="Close [^"]+ dialog"/g) || []).length, 4);
@@ -74,57 +104,66 @@ test('homepage header and modal controls are fixed and accessible', () => {
     assert.match(source, /modal\.querySelector\('\.modal-close'\)\?\.focus\(\)/);
     assert.match(source, /modalTrigger instanceof HTMLElement/);
 });
-test('homepage header follows the two-tier reference structure and keeps dynamic colors', () => {
+test('homepage header follows the two-tier structure and brand palette contrast rules', () => {
     assert.match(source, /class="header-top"/);
     assert.match(source, /class="header-nav"/);
-    assert.match(source, /Login[\s\S]*Sign Up[\s\S]*currency-label/);
-    assert.match(source, /Cricket[\s\S]*Live Casino[\s\S]*Slot Games[\s\S]*Sportsbook/);
-    assert.match(source, /\.header-top[\s\S]*background: color-mix\(in srgb, var\(--gold-dark\)/);
-    assert.match(source, /\.header-nav[\s\S]*background: color-mix\(in srgb, var\(--gold\)/);
+    assert.match(source, /Login[\s\S]*Sign Up/);
+    assert.match(source, /Home[\s\S]*Games[\s\S]*Categories[\s\S]*Providers[\s\S]*Dashboard[\s\S]*Affiliate/);
+    assert.match(source, /--brand-black: #050505/);
+    assert.match(source, /--brand-yellow: #f5c400/);
+    assert.match(source, /--brand-red: #e31b23/);
+    assert.match(source, /--brand-white: #ffffff/);
+    assert.match(source, /\.header-top[\s\S]*background: var\(--brand-black\)[\s\S]*color: var\(--brand-white\)/);
+    assert.match(source, /\.header-nav[\s\S]*background: var\(--brand-yellow\)[\s\S]*color: var\(--brand-black\)/);
     assert.match(source, /overflow-x: auto/);
     assert.match(homepageIntegration, /querySelectorAll\('\.currency-label'\)/);
 });
-test('homepage restores the compact mobile header with harmonized API colors', () => {
-    assert.match(source, /\.header-top[\s\S]*color-mix\(in srgb, var\(--gold-dark\)/);
-    assert.match(source, /\.header-nav[\s\S]*color-mix\(in srgb, var\(--gold\)/);
-    assert.match(source, /@media \(max-width: 639px\)[\s\S]*\.header-glass[\s\S]*display: none/);
-    assert.match(source, /\.legacy-header\.hidden[\s\S]*display: flex !important/);
-    assert.match(source, /\.legacy-header\.hidden[\s\S]*position: fixed/);
-    assert.match(source, /background: var\(--gold-dark\)/);
+test('homepage keeps the same two-tier header on mobile', () => {
+    assert.match(source, /@media \(max-width: 639px\)[\s\S]*\.header-glass[\s\S]*display: block !important/);
+    assert.match(source, /\.legacy-header\.hidden[\s\S]*display: none !important/);
+    assert.match(source, /background: var\(--brand-black\)/);
     assert.match(source, /inset: 0 0 auto 0/);
-    assert.match(source, /padding-top: 66px/);
+    assert.match(source, /padding-top: 124px/);
 });
-test('desktop and mobile headers are locked to the viewport top', () => {
+test('the unified homepage header is locked to the viewport top', () => {
     assert.match(
         source,
         /\.header-glass[\s\S]*position: fixed !important[\s\S]*inset: 0 0 auto 0 !important/,
     );
-    assert.match(
-        source,
-        /\.legacy-header\.hidden[\s\S]*position: fixed !important[\s\S]*inset: 0 0 auto 0 !important/,
-    );
 });
-test('header icons and text are horizontally and vertically centered', () => {
-    assert.match(
-        source,
-        /\.header-glass \.header-language[\s\S]*align-items: center[\s\S]*justify-content: center/,
-    );
-    assert.match(
-        source,
-        /\.legacy-header \.mobile-only[\s\S]*width: 40px[\s\S]*height: 40px[\s\S]*align-items: center[\s\S]*justify-content: center/,
-    );
-    assert.match(source, /\.legacy-header \.mobile-only i[\s\S]*transform: none/);
+test('header links are centered with no underline or dropdown arrows', () => {
+    assert.match(source, /\.header-nav-inner[\s\S]*justify-content: center/);
+    assert.match(source, /\.header-nav a,[\s\S]*text-decoration: none !important[\s\S]*border-bottom: 0 !important/);
+    const activeHeader = source.match(/<header class="header-glass">[\s\S]*?<\/header>/)?.[0] || '';
+    assert.doesNotMatch(activeHeader, /fa-chevron|arrow-left|chevron-left/);
 });
-test('homepage header controls render without individual boxes', () => {
+test('homepage header actions use accessible white, red, and yellow contrast', () => {
     assert.match(
         source,
-        /\.header-glass \.header-auth-button\.primary[\s\S]*background: transparent !important/,
+        /\.header-auth-button[\s\S]*background: var\(--brand-white\)[\s\S]*color: var\(--brand-black\)/,
     );
     assert.match(
         source,
-        /\.header-glass \.header-new-badge[\s\S]*background: transparent !important/,
+        /\.header-auth-button\.primary[\s\S]*background: var\(--brand-red\)[\s\S]*color: var\(--brand-white\)/,
     );
-    assert.match(source, /\.legacy-header \.avatar-ring[\s\S]*background: transparent !important/);
+    assert.doesNotMatch(siteShell, /mobile-trigger|global-nav open/);
+});
+
+test('all React pages use the same arrow-free, underline-free shared header', () => {
+    assert.match(siteShell, /header-glass shared-site-header[\s\S]*header-top[\s\S]*header-top-inner[\s\S]*header-brand[\s\S]*header-actions[\s\S]*header-nav[\s\S]*header-nav-inner/);
+    assert.match(siteShell, /Home[\s\S]*Games[\s\S]*Categories[\s\S]*Providers[\s\S]*Dashboard[\s\S]*Affiliate/);
+    assert.doesNotMatch(siteShell.match(/<header className="header-glass shared-site-header">[\s\S]*?<\/header>/)?.[0] || '', /name="arrow"|chevron|underline/);
+});
+
+test('all React pages use the same homepage footer structure and links', () => {
+    assert.match(siteShell, /footer-glow shared-site-footer/);
+    assert.match(siteShell, /Quick Links[\s\S]*Home[\s\S]*Games[\s\S]*Sports[\s\S]*Promotions/);
+    assert.match(siteShell, /Legal[\s\S]*Terms &amp; Conditions[\s\S]*Privacy Policy[\s\S]*Responsible Gaming[\s\S]*Cookie Policy/);
+    assert.match(siteShell, /Secure[\s\S]*Fair[\s\S]*Fun[\s\S]*24\/7/);
+});
+
+test('every non-home content route is wrapped by the shared site shell', () => {
+    for (const route of sharedShellRoutes) assert.match(route, /SiteShell|PublicContentShell/);
 });
 test('sidebar and modal close icons have no visual boxes', () => {
     assert.match(source, /\.modal-close[\s\S]*border: 0[\s\S]*background: transparent/);
@@ -154,17 +193,22 @@ test('standalone shells use locally built assets and a same-origin CSP', () => {
 test('public catalogue and auth recovery use same-origin BFF routes', () => {
     const integration = fs.readFileSync(new URL('../public/app.js', import.meta.url), 'utf8');
     assert.match(integration, /\/api\/public\/home/);
-    assert.match(integration, /\/api\/public\/games/);
+    assert.match(publicProxy, /games: '\/api\/v1\/public\/games'/);
     assert.match(integration, /\/api\/public\/categories/);
     assert.match(integration, /\/api\/public\/click/);
     assert.match(integration, /\/api\/public\/settings/);
     assert.match(integration, /data\.general_setting/);
     assert.match(integration, /branding\.logo/);
     assert.match(integration, /validHex/);
-    assert.match(source, /id="providerMega"/);
+    assert.doesNotMatch(source, /id="providerMega"/);
     assert.match(source, /id="recentGameGrid"/);
     assert.match(integration, /home\.popular_games/);
     assert.match(integration, /home\.recent_clicked_games/);
+    assert.match(integration, /\/game\/\$\{encodeURIComponent\(game\.slug \|\| game\.id\)\}/);
+    assert.match(integration, /href="\/category\/\$\{encodeURIComponent\(item\.slug\)\}"/);
+    assert.match(source, /href="\/games"[\s\S]*>View All/);
+    assert.match(source, /href="\/categories"[\s\S]*>See All/);
+    assert.match(source, /wallet: '\/user\/deposit'/);
     assert.match(integration, /\/api\/auth\/login/);
     assert.match(integration, /\/api\/auth\/register/);
     assert.match(integration, /\/api\/auth\/password\/email/);
@@ -182,64 +226,57 @@ test('public catalogue and auth recovery use same-origin BFF routes', () => {
     assert.match(upstreamFetch, /DEFAULT_TIMEOUT_MS = 10_000/);
     assert.match(upstreamFetch, /retryGet/);
     assert.match(upstreamFetch, /response\.status < 500/);
+    assert.match(publicProxy, /function sameOriginAssets/);
+    assert.match(publicProxy, /url\.pathname\.startsWith\('\/assets\/'\)/);
+    assert.match(publicProxy, /url\.pathname\.startsWith\('\/uploads\/'\)/);
+    assert.match(publicProxy, /sameOriginAssets\(await upstream\.json\(\)\)/);
 });
-test('user dashboard is guarded and renders the supplied document', () => {
-    assert.match(dashboardPage, /cookies\(\)/);
-    assert.match(dashboardPage, /jubo88_token/);
-    assert.match(dashboardPage, /redirect\('\/'\)/);
-    assert.match(dashboardPage, /src="\/user-dashboard\.html"/);
-    assert.match(dashboardSource, /<title>JUBO88 - User Dashboard<\/title>/);
-    assert.match(dashboardSource, /id="depositModal"/);
-    assert.match(dashboardSource, /id="withdrawModal"/);
-    assert.match(dashboardSource, /src="\/user-dashboard-app\.js"/);
-    for (const resource of [
-        'dashboard',
-        'transactions',
-        'deposits',
-        'withdrawals',
-        'game-logs',
-        'deposit-methods',
-        'withdraw-methods',
-        'password',
-    ])
-        assert.match(dashboardIntegration, new RegExp(`['"]${resource}['"]`));
-    for (const resource of ['profile', 'profile-save', 'tickets', 'ticket-create'])
+test('user account has separate API-first dashboard, payment, history and profile pages', () => {
+    assert.match(dashboardPage, /redirect\('\/user\/dashboard'\)/);
+    for (const section of ['dashboard', 'deposit', 'withdraw', 'transactions', 'profile'])
+        assert.match(userRoute + userArea, new RegExp(section));
+    for (const resource of ['dashboard', 'transactions', 'deposit-methods', 'withdraw-methods', 'deposit', 'withdraw', 'profile', 'profile-save'])
         assert.ok(
             userProxy.includes(`${resource}:`) || userProxy.includes(`'${resource}':`),
             `missing user BFF resource ${resource}`,
         );
-    assert.match(userProxy, /jubo88_token/);
+    assert.match(userProxy, /jaba9_token/);
     assert.match(userProxy, /Authorization: `Bearer \$\{token\}`/);
-    assert.match(userProxy, /routes\[resource\]/);
-    for (const label of [
-        'Dashboard',
-        'Deposit',
-        'Withdraw',
-        'History',
-        'Logs',
-        'My Profile',
-        'Password Change',
-        'Support',
-    ])
-        assert.match(dashboardSource, new RegExp(`>${label}<|> ${label}<`));
-    assert.match(dashboardSource, /goToUserArea/);
-    assert.match(
-        dashboardSource,
-        /Home[\s\S]*Category List[\s\S]*Games[\s\S]*Live[\s\S]*Promotions/,
-    );
-    assert.match(dashboardSource, /BALANCE CARD[\s\S]*USER MENU[\s\S]*STATISTICS ROW/);
-    assert.match(dashboardSource, /class="user-menu-tabs glass"/);
-    assert.doesNotMatch(dashboardSource, /goToUserArea\('\/user\//);
-    assert.match(dashboardSource, /openModal\('depositModal'\)/);
-    assert.match(dashboardSource, /openModal\('accountPanelModal'\)/);
-    assert.match(dashboardIntegration, /showProfile/);
-    assert.match(dashboardIntegration, /showSupport/);
-    assert.match(dashboardIntegration, /withdrawalFields/);
-    assert.match(dashboardIntegration, /\/api\/auth\/logout/);
-    assert.doesNotMatch(dashboardIntegration, /prompt\(/);
-    assert.doesNotMatch(dashboardSource, /href="#"/);
-    assert.match(dashboardIntegration, /AbortController/);
-    assert.match(dashboardSource, /data-loading="true"/);
+    assert.match(userArea, /fallbackTransactions/);
+    assert.match(userArea, /source-badge/);
+    assert.match(userArea, /Search transaction or reference/);
+    assert.match(userArea, /className="pagination"/);
+});
+
+test('catalogue routes provide search, filters, pagination, fallback data and game play', () => {
+    assert.match(catalogue, /Global catalogue search/);
+    assert.match(catalogue, /All categories/);
+    assert.match(catalogue, /All providers/);
+    assert.match(catalogue, /className="pagination"/);
+    assert.match(catalogue, /fallbackGames/);
+    assert.match(catalogue, /className="home-game-grid"/);
+    assert.match(catalogue, /className="game-card"/);
+    assert.match(catalogue, /className="game-name"/);
+    assert.doesNotMatch(catalogue, /modern-game-card|game-art/);
+    assert.match(globalStyles, /\.home-game-grid[\s\S]*grid-template-columns: repeat\(3/);
+    assert.match(globalStyles, /@media\(min-width:1024px\)[\s\S]*repeat\(6/);
+    assert.match(globalStyles, /@media\(max-width:639px\)[\s\S]*repeat\(2/);
+    assert.match(gamePlayer, /<iframe/);
+    assert.match(gamePlayer, /Fallback preview/);
+    assert.match(siteShell, /\/api\/public\/settings/);
+    assert.match(siteShell, /Admin recovery request/);
+    assert.match(siteShell, /\/api\/auth\/password\/email/);
+    assert.match(fallbackData, /fallbackCategories/);
+    assert.match(fallbackData, /fallbackProviders/);
+});
+
+test('reference content pages use the same compact homepage section format', () => {
+    assert.match(publicShell, /catalogue-intro/);
+    assert.match(publicShell, /home-content-section/);
+    assert.match(publicShell, /home-section-heading/);
+    assert.match(publicShell, /home-content-card/);
+    assert.match(globalStyles, /font-size: clamp\(1\.75rem, 4vw, 2\.75rem\)/);
+    assert.match(globalStyles, /\.account-heading h1,[\s\S]*font-size: 2rem/);
 });
 
 test('public reference routes are real metadata-backed pages with working navigation', () => {
@@ -276,10 +313,11 @@ test('public reference routes are real metadata-backed pages with working naviga
 });
 
 test('affiliate panel uses an isolated HTTP-only token and fixed BFF allowlist', () => {
-    assert.match(affiliatePage, /jubo88_affiliate_token/);
-    assert.doesNotMatch(affiliatePage + affiliateProxy, /jubo88_token/);
+    assert.match(affiliatePage, /redirect\('\/affi\/dashboard'\)/);
+    assert.match(affiliateProxy, /jaba9_affiliate_token/);
+    assert.doesNotMatch(affiliateProxy, /jaba9_token/);
     assert.match(affiliateProxy, /httpOnly: true/);
-    assert.match(affiliateProxy, /path: '\/affiliate'/);
+    assert.match(affiliateProxy, /path: '\/'/);
     for (const resource of [
         'login',
         'register',
@@ -289,6 +327,7 @@ test('affiliate panel uses an isolated HTTP-only token and fixed BFF allowlist',
         'earnings',
         'withdrawals',
         'transfer',
+        'deposit',
         'withdraw',
         'logout',
     ])
@@ -296,8 +335,10 @@ test('affiliate panel uses an isolated HTTP-only token and fixed BFF allowlist',
             affiliateProxy.includes(`${resource}:`) || affiliateProxy.includes(`'${resource}':`),
             `missing affiliate resource ${resource}`,
         );
-    for (const state of ['Loading', 'No records found', 'temporarily unavailable'])
-        assert.match(affiliatePanel + affiliateProxy, new RegExp(state));
-    assert.match(affiliatePanel, /commission_balance/);
-    assert.match(affiliatePanel, /referral_link/);
+    for (const section of ['login', 'register', 'dashboard', 'earnings', 'withdraw', 'history', 'deposit', 'transfer'])
+        assert.match(affiliateRoute + affiliateArea, new RegExp(section));
+    assert.match(affiliateArea, /recipient_type/);
+    assert.match(affiliateArea, /commission_balance/);
+    assert.match(affiliateArea, /referral_link/);
+    assert.match(affiliateArea, /fallbackAffiliateRecords/);
 });

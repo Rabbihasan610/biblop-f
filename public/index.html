@@ -45,6 +45,10 @@
 
             /* ── Color Variables ── */
             :root {
+                --brand-black: #050505;
+                --brand-yellow: #f5c400;
+                --brand-red: #e31b23;
+                --brand-white: #ffffff;
                 --gold: #f5b81b;
                 --gold-light: #fdd835;
                 --gold-dark: #d4910f;
@@ -510,55 +514,6 @@
             .category-scroll .cat-item:hover {
                 border-color: rgba(245, 184, 27, 0.3);
                 color: var(--text-primary);
-            }
-
-            /* Category/provider mega menu stays flat and uses the system palette. */
-            .catalogue-menu {
-                position: relative;
-            }
-            .provider-mega {
-                display: none;
-                grid-template-columns: repeat(5, minmax(0, 1fr));
-                gap: 1px;
-                margin-top: 8px;
-                padding: 1px;
-                background: var(--border-light);
-                border: 0;
-            }
-            .provider-mega.open {
-                display: grid;
-            }
-            .provider-mega button {
-                min-height: 42px;
-                padding: 9px 12px;
-                border: 0;
-                border-radius: 0;
-                background: var(--bg-card);
-                color: var(--text-secondary);
-                font-size: 11px;
-                font-weight: 600;
-                text-align: left;
-                cursor: pointer;
-            }
-            .provider-mega button:hover,
-            .provider-mega button:focus-visible,
-            .provider-mega button.active {
-                background: color-mix(in srgb, var(--gold) 18%, var(--bg-card));
-                color: var(--text-primary);
-                outline: 0;
-            }
-            .catalogue-empty {
-                grid-column: 1 / -1;
-                padding: 14px;
-                background: var(--bg-card);
-                color: var(--text-muted);
-                font-size: 11px;
-                text-align: center;
-            }
-            @media (max-width: 767px) {
-                .provider-mega {
-                    grid-template-columns: repeat(2, minmax(0, 1fr));
-                }
             }
 
             /* ── Game Cards ── */
@@ -1067,10 +1022,9 @@
                 color: var(--gold);
             }
 
-            .header-glass *,
-            .header-glass *::before,
-            .header-glass *::after {
-                border-color: transparent !important;
+            .header-glass a,
+            .header-glass button {
+                border-color: transparent;
             }
 
             .header-glass {
@@ -1084,8 +1038,9 @@
             }
             .header-top {
                 min-height: 70px;
-                background: color-mix(in srgb, var(--gold-dark) 86%, var(--gold) 14%);
-                color: #fff;
+                background: var(--brand-black);
+                color: var(--brand-white);
+                border-top: 3px solid var(--brand-red);
             }
             .header-top-inner,
             .header-nav-inner {
@@ -1106,6 +1061,10 @@
                 min-width: 150px;
                 align-items: center;
             }
+            .header-brand .logo-text {
+                color: var(--brand-yellow);
+                font-size: 1.5rem;
+            }
             .header-brand .site-logo-image {
                 height: 44px;
                 max-width: 190px;
@@ -1121,19 +1080,19 @@
                 min-height: 38px;
                 place-items: center;
                 padding: 8px 20px;
-                background: color-mix(in srgb, var(--gold-dark) 72%, #fff 8%);
-                color: #fff;
+                background: var(--brand-white);
+                color: var(--brand-black);
                 font-size: 13px;
                 font-weight: 700;
             }
             .header-auth-button.primary {
-                background: color-mix(in srgb, var(--gold) 88%, #fff 12%);
-                color: #08090d;
+                background: var(--brand-red);
+                color: var(--brand-white);
             }
             .header-auth-button:hover,
             .header-auth-button:focus-visible {
-                background: #fff;
-                color: color-mix(in srgb, var(--gold-dark) 88%, #000 12%);
+                background: var(--brand-yellow);
+                color: var(--brand-black);
             }
             .header-language {
                 display: inline-flex;
@@ -1148,19 +1107,20 @@
             .header-language-dot {
                 width: 18px;
                 height: 18px;
-                background: #0a9f55;
+                background: var(--brand-red);
                 outline: 3px solid rgba(255, 255, 255, 0.16);
                 outline-offset: -3px;
             }
             .header-nav {
                 min-height: 44px;
-                background: color-mix(in srgb, var(--gold) 90%, var(--gold-dark) 10%);
-                color: #08090d;
+                background: var(--brand-yellow);
+                color: var(--brand-black);
             }
             .header-nav-inner {
                 display: flex;
                 min-height: 44px;
                 align-items: stretch;
+                justify-content: center;
                 overflow-x: auto;
                 scrollbar-width: none;
             }
@@ -1175,19 +1135,21 @@
                 align-items: center;
                 gap: 7px;
                 padding: 0 16px;
-                color: #08090d;
+                color: var(--brand-black);
                 font-size: 12px;
                 font-weight: 800;
                 letter-spacing: 0.02em;
                 white-space: nowrap;
+                text-decoration: none !important;
+                border-bottom: 0 !important;
             }
             .header-nav a:hover,
             .header-nav a:focus-visible,
             .header-menu-button:hover,
             .header-menu-button:focus-visible,
             .header-nav a.active {
-                background: rgba(8, 9, 13, 0.14);
-                color: #08090d;
+                background: var(--brand-red);
+                color: var(--brand-white);
             }
             .header-new-badge {
                 display: inline-grid;
@@ -1195,18 +1157,10 @@
                 min-height: 24px;
                 place-items: center;
                 padding: 2px 5px;
-                background: #0aa84f;
-                color: #fff;
+                background: var(--brand-red);
+                color: var(--brand-white);
                 font-size: 8px;
                 font-weight: 900;
-            }
-
-            .header-glass a,
-            .header-glass button,
-            .header-glass .header-auth-button,
-            .header-glass .header-auth-button.primary,
-            .header-glass .header-new-badge {
-                background: transparent !important;
             }
 
             .header-glass a,
@@ -1231,16 +1185,11 @@
             .header-glass a:focus-visible,
             .header-glass button:hover,
             .header-glass button:focus-visible {
-                background: transparent !important;
-                color: color-mix(in srgb, currentColor 72%, #fff 28%);
-                opacity: 0.82;
+                opacity: 1;
             }
 
             .header-glass .header-new-badge {
-                min-width: auto;
-                min-height: auto;
-                padding: 0;
-                color: #fff;
+                color: var(--brand-white);
             }
             body > .max-w-7xl {
                 padding-top: 132px;
@@ -1567,23 +1516,11 @@
                 }
 
                 .header-glass {
-                    display: none;
+                    display: block !important;
                 }
 
                 .legacy-header.hidden {
-                    position: fixed !important;
-                    inset: 0 0 auto 0 !important;
-                    z-index: 180;
-                    display: flex !important;
-                    width: 100%;
-                    height: 56px;
-                    min-height: 56px;
-                    align-items: center;
-                    justify-content: space-between;
-                    margin: 0 !important;
-                    padding: 0 10px;
-                    background: var(--gold-dark);
-                    color: #fff;
+                    display: none !important;
                 }
 
                 .legacy-header *,
@@ -1593,7 +1530,7 @@
                 }
 
                 .legacy-header .logo-text {
-                    color: #fff;
+                    color: var(--brand-yellow);
                 }
 
                 .legacy-header .site-logo-image {
@@ -1604,7 +1541,7 @@
                 .legacy-header #langToggle,
                 .legacy-header #profileToggle {
                     min-height: 38px;
-                    color: #fff;
+                    color: var(--brand-white);
                 }
 
                 .legacy-header .mobile-only {
@@ -1638,12 +1575,12 @@
                 .legacy-header #profileToggle:focus-visible,
                 .legacy-header .sidebar-close:hover,
                 .legacy-header .sidebar-close:focus-visible {
-                    color: var(--gold);
+                    color: var(--brand-yellow);
                 }
 
                 .legacy-header .profile-dropdown {
                     top: calc(100% + 8px);
-                    background: color-mix(in srgb, var(--gold-dark) 92%, #000 8%);
+                    background: var(--brand-black);
                 }
 
                 .legacy-header button,
@@ -1654,12 +1591,12 @@
 
                 body > .max-w-7xl {
                     padding-inline: 10px;
-                    padding-top: 66px;
+                    padding-top: 124px;
                 }
 
                 .header-top,
                 .header-top-inner {
-                    min-height: 54px;
+                    min-height: 70px;
                 }
                 .header-top-inner,
                 .header-nav-inner {
@@ -1693,7 +1630,10 @@
                 .header-nav-inner,
                 .header-nav a,
                 .header-menu-button {
-                    min-height: 42px;
+                    min-height: 44px;
+                }
+                .header-nav-inner {
+                    justify-content: flex-start;
                 }
 
                 section.glass {
@@ -1724,7 +1664,7 @@
                 <div
                     class="p-4 border-b border-[var(--border-light)] flex items-center justify-between"
                 >
-                    <span class="logo-text text-2xl">JUBO88</span>
+                    <span class="logo-text text-2xl">Jaba9</span>
                     <button
                         type="button"
                         onclick="closeSidebar()"
@@ -1762,15 +1702,7 @@
                 <div class="header-top">
                     <div class="header-top-inner">
                         <div class="header-brand">
-                            <button
-                                type="button"
-                                class="header-menu-button mobile-only"
-                                onclick="openSidebar()"
-                                aria-label="Open menu"
-                            >
-                                <i class="fas fa-bars" aria-hidden="true"></i>
-                            </button>
-                            <a href="/" class="logo-text" aria-label="Homepage">JUBO88</a>
+                            <a href="/" class="logo-text" aria-label="Homepage">Jaba9</a>
                         </div>
                         <div class="header-actions">
                             <button
@@ -1787,59 +1719,17 @@
                             >
                                 Sign Up
                             </button>
-                            <button
-                                type="button"
-                                id="headerLanguageToggle"
-                                class="header-language"
-                                onclick="openModal('langModal')"
-                                aria-label="Change language and currency"
-                            >
-                                <span class="header-language-dot" aria-hidden="true"></span
-                                ><span class="currency-label">৳ BDT</span
-                                ><span class="language-name">English</span>
-                            </button>
                         </div>
                     </div>
                 </div>
                 <nav class="header-nav" aria-label="Primary navigation">
                     <div class="header-nav-inner">
-                        <button
-                            type="button"
-                            class="header-menu-button"
-                            onclick="openSidebar()"
-                            aria-label="Open category menu"
-                        >
-                            <i class="fas fa-mobile-screen-button" aria-hidden="true"></i>
-                        </button>
-                        <a href="/" class="active" aria-current="page"
-                            ><i class="fas fa-house" aria-hidden="true"></i
-                            ><span class="sr-only">Home</span></a
-                        >
-                        <a href="/cricket"
-                            >Cricket <i class="fas fa-chevron-down" aria-hidden="true"></i
-                        ></a>
-                        <a href="/casino"
-                            >Live Casino <i class="fas fa-chevron-down" aria-hidden="true"></i
-                        ></a>
-                        <a href="/slot"
-                            >Slot Games <i class="fas fa-chevron-down" aria-hidden="true"></i
-                        ></a>
-                        <a href="/games"
-                            >Table Games <i class="fas fa-chevron-down" aria-hidden="true"></i
-                        ></a>
-                        <a href="/sportsbook"
-                            >Sportsbook <i class="fas fa-chevron-down" aria-hidden="true"></i
-                        ></a>
-                        <a href="/fishing"
-                            >Fishing <i class="fas fa-chevron-down" aria-hidden="true"></i
-                        ></a>
-                        <a href="/crash"
-                            >Crash <i class="fas fa-chevron-down" aria-hidden="true"></i
-                        ></a>
-                        <a href="/promotion">Promotion</a>
-                        <a href="/jayarank/challenge"
-                            >Jaya Rank <span class="header-new-badge">NEW</span></a
-                        >
+                        <a href="/" class="active" aria-current="page">Home</a>
+                        <a href="/games">Games</a>
+                        <a href="/categories">Categories</a>
+                        <a href="/providers">Providers</a>
+                        <a href="/user/dashboard">Dashboard</a>
+                        <a href="/affi/login">Affiliate</a>
                     </div>
                 </nav>
             </header>
@@ -1852,7 +1742,7 @@
                     >
                         <i class="fas fa-bars"></i>
                     </button>
-                    <span class="logo-text">JUBO88</span>
+                    <span class="logo-text">Jaba9</span>
                     <nav
                         class="desktop-only items-center gap-5 ml-4 text-sm font-medium text-[var(--text-secondary)]"
                     >
@@ -1881,7 +1771,6 @@
                     >
                         <i class="fas fa-globe text-[12px]"></i>
                         <span class="hidden xs:inline">EN</span>
-                        <i class="fas fa-chevron-down text-[7px] opacity-40"></i>
                     </button>
 
                     <!-- Profile / Auth -->
@@ -1895,7 +1784,6 @@
                             >
                                 G
                             </div>
-                            <i class="fas fa-chevron-down text-[7px] text-[var(--text-muted)]"></i>
                         </button>
                         <div
                             id="profileDropdown"
@@ -1957,9 +1845,9 @@
                                     <p class="sub-text">
                                         Super Betting Pass – every bet brings you closer
                                     </p>
-                                    <button class="btn-primary text-sm mt-3 px-5 py-2">
+                                    <a href="/promotion" class="btn-primary inline-block text-sm mt-3 px-5 py-2">
                                         Claim Now
-                                    </button>
+                                    </a>
                                 </div>
                                 <span class="text-5xl opacity-20 hidden sm:block">🏍️</span>
                             </div>
@@ -1980,9 +1868,9 @@
                                         >
                                     </h2>
                                     <p class="sub-text">Up to ₹10,000 free on your first deposit</p>
-                                    <button class="btn-primary text-sm mt-3 px-5 py-2">
+                                    <a href="/promotion" class="btn-primary inline-block text-sm mt-3 px-5 py-2">
                                         Get Bonus
-                                    </button>
+                                    </a>
                                 </div>
                                 <span class="text-5xl opacity-20 hidden sm:block">🎁</span>
                             </div>
@@ -2003,9 +1891,9 @@
                                     <p class="sub-text">
                                         Enhanced odds &amp; free bets on every match
                                     </p>
-                                    <button class="btn-primary text-sm mt-3 px-5 py-2">
+                                    <a href="/sportsbook" class="btn-primary inline-block text-sm mt-3 px-5 py-2">
                                         Bet Now
-                                    </button>
+                                    </a>
                                 </div>
                                 <span class="text-5xl opacity-20 hidden sm:block">🏏</span>
                             </div>
@@ -2023,23 +1911,22 @@
             <section>
                 <div class="flex items-center justify-between mb-3">
                     <span class="section-title"><span class="bar"></span> Categories</span>
-                    <span class="see-all" onclick="scrollCategories()"
+                    <a class="see-all" href="/categories"
                         >See All <i class="fas fa-arrow-right text-[10px]"></i
-                    ></span>
+                    ></a>
                 </div>
                 <div class="category-scroll" id="categoryScroll">
                     <span class="cat-item active">Loading...</span>
                 </div>
-                <div class="provider-mega" id="providerMega" aria-label="Providers"></div>
             </section>
 
             <!-- ═══ GAMES SECTION ═══ -->
             <section>
                 <div class="flex items-center justify-between mb-3">
                     <span class="section-title"><span class="bar"></span> Popular Games</span>
-                    <span class="see-all"
+                    <a class="see-all" href="/games"
                         >View All <i class="fas fa-arrow-right text-[10px]"></i
-                    ></span>
+                    ></a>
                 </div>
                 <div class="grid grid-cols-3 gap-2.5 lg:grid-cols-6" id="gameGrid">
                     <p class="col-span-full text-center text-[var(--text-muted)] py-8">
@@ -2270,7 +2157,7 @@
                 </div>
             </section>
 
-            <!-- ═══ JUBO88 BRAND SECTION ═══ -->
+            <!-- ═══ DYNAMIC BRAND SECTION ═══ -->
             <section class="glass rounded-2xl p-5 card-glow glass-hover relative overflow-hidden">
                 <div
                     class="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-[#f5b81b] opacity-[0.02] blur-3xl pointer-events-none"
@@ -2278,14 +2165,14 @@
                 <div class="relative z-10">
                     <div class="flex items-center gap-3 mb-2.5">
                         <span class="text-2xl font-black tracking-tight" style="color: #f5b81b"
-                            >JUBO88</span
+                            >Jaba9</span
                         >
                         <span class="badge-gold text-[8px]">🔥 trending</span>
                     </div>
                     <div class="gujarati-text space-y-1.5">
                         <p class="text-[var(--text-secondary)] text-sm font-medium leading-relaxed">
                             <span style="color: #f5b81b">ગાળા બંધ દ્વિટુ!</span>
-                            બંધની JUBO88 ગાળાની સોલેનલ ક્રમને બંધ આરડ્ હાન વિતરે અસ્તિકારો પેસ્ટમાં
+                            Jaba9 offers a fast, simple gaming experience with responsible play at its core.
                             જમા!
                         </p>
                         <p class="text-[var(--text-secondary)] text-sm font-medium leading-relaxed">
@@ -2332,7 +2219,7 @@
             <section class="glass rounded-2xl p-5 card-glow glass-hover space-y-3">
                 <div class="flex items-center gap-3">
                     <span class="text-xl font-black tracking-tight" style="color: #f5b81b"
-                        >JUBO88</span
+                        >Jaba9</span
                     >
                     <span class="w-6 h-0.5 bg-[#f5b81b] opacity-20"></span>
                     <span class="badge-gold text-[8px]">secure</span>
@@ -2412,7 +2299,7 @@
                 <div
                     class="footer-bottom flex flex-col sm:flex-row items-center justify-between gap-2"
                 >
-                    <span class="font-medium">© 2026 JUBO88 · All rights reserved</span>
+                    <span class="font-medium">© 2026 <span class="footer-site-name">Jaba9</span> · All rights reserved</span>
                     <div class="flex items-center gap-4">
                         <span
                             class="flex items-center gap-1.5 text-[var(--text-muted)] text-[9px] font-medium"
@@ -2489,7 +2376,7 @@
                     </button>
                 </div>
                 <p class="text-[13px] text-[var(--text-secondary)] mb-5">
-                    Sign in to your JUBO88 account
+                    Sign in to your Jaba9 account
                 </p>
                 <form
                     onsubmit="
@@ -2550,7 +2437,7 @@
                     </button>
                 </div>
                 <p class="text-[13px] text-[var(--text-secondary)] mb-5">
-                    Join JUBO88 and start winning
+                    Join Jaba9 and start playing
                 </p>
                 <form
                     onsubmit="
@@ -2817,7 +2704,14 @@
                     .querySelectorAll('.bottom-app-bar .bar-item')
                     .forEach((item) => item.classList.remove('active'));
                 el.classList.add('active');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                const routes = {
+                    home: '/',
+                    games: '/games',
+                    live: '/sportsbook',
+                    wallet: '/user/deposit',
+                    profile: '/user/profile',
+                };
+                window.top.location.href = routes[page] || '/';
             }
 
             // ─── Slider ───
@@ -2861,21 +2755,6 @@
             sliderContainer.addEventListener('mouseenter', () => clearInterval(sliderInterval));
             sliderContainer.addEventListener('mouseleave', startSlider);
 
-            // ─── Category Scroll ───
-            document.querySelectorAll('.category-scroll .cat-item').forEach((item) => {
-                item.addEventListener('click', function () {
-                    document
-                        .querySelectorAll('.category-scroll .cat-item')
-                        .forEach((i) => i.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-
-            function scrollCategories() {
-                const container = document.getElementById('categoryScroll');
-                container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' });
-            }
-
             // ─── Desktop / Mobile ───
             function checkViewport() {
                 const isDesktop = window.innerWidth >= 1024;
@@ -2889,7 +2768,7 @@
             checkViewport();
             window.addEventListener('resize', checkViewport);
 
-            console.log('JUBO88 UI ready — pure dark mode with gold accents.');
+            console.log('Jaba9 UI ready.');
         </script>
         <script src="/app.js"></script>
     </body>
