@@ -10,6 +10,38 @@ const routes: Record<string, string> = {
     games: '/api/v1/public/games',
 };
 
+/**
+ * Keeps Laravel-hosted public assets behind the same origin as the frontend.
+ *
+ * Laravel returns absolute URLs (often 127.0.0.1 in local/standalone setups).
+ * Sending those URLs to the browser both leaks the internal origin and makes
+ * images fail under the frontend CSP. Next's /assets and /uploads rewrites are
+ * the browser-safe public entry points.
+ */
+function sameOriginAssets(value: unknown): unknown {
+    if (Array.isArray(value)) return value.map(sameOriginAssets);
+    if (value && typeof value === 'object') {
+        return Object.fromEntries(
+            Object.entries(value).map(([key, child]) => [key, sameOriginAssets(child)]),
+        );
+    }
+    if (typeof value !== 'string') return value;
+
+    try {
+        const url = new URL(value);
+        const upstreamOrigin = new URL(backend).origin;
+        if (
+            url.origin === upstreamOrigin &&
+            (url.pathname.startsWith('/assets/') || url.pathname.startsWith('/uploads/'))
+        ) {
+            return `${url.pathname}${url.search}${url.hash}`;
+        }
+    } catch {
+        // Non-URL strings are ordinary API data and should remain unchanged.
+    }
+    return value;
+}
+
 /** Proxies allowlisted public read requests to Laravel. */
 export async function GET(
     request: NextRequest,
@@ -24,7 +56,9 @@ export async function GET(
             { headers: { Accept: 'application/json' }, cache: 'no-store' },
             true,
         );
-        return NextResponse.json(await upstream.json(), { status: upstream.status });
+        return NextResponse.json(sameOriginAssets(await upstream.json()), {
+            status: upstream.status,
+        });
     } catch {
         return NextResponse.json(
             { status: 'error', message: 'The catalogue service is temporarily unavailable.' },

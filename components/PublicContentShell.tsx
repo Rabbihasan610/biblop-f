@@ -1,23 +1,18 @@
 import Link from 'next/link';
 import type { PublicPage } from '@/lib/public-content';
-import { publicNav } from '@/lib/public-content';
+import { SiteShell } from './SiteShell';
 
 export function PublicContentShell({ page }: { page: PublicPage }) {
-  return <div className="content-site">
-    <header className="content-header">
-      <Link className="content-logo" href="/">JUBO88</Link>
-      <nav aria-label="Primary navigation">{publicNav.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}</nav>
-    </header>
-    <main className="content-main">
-      <p className="content-eyebrow">{page.eyebrow}</p>
+  return <SiteShell><main className="page-main catalogue-page page-enter">
+    <section className="catalogue-intro">
+      <p className="eyebrow">{page.eyebrow}</p>
       <h1>{page.title}</h1>
-      <p className="content-lead">{page.description}</p>
-      <div className="content-grid">{page.sections.map(section => <section key={section.heading}><h2>{section.heading}</h2><p>{section.body}</p></section>)}</div>
-      <div className="content-actions"><Link className="content-primary" href="/#gameGrid">Browse games</Link><Link href="/contact">Contact support</Link></div>
-    </main>
-    <footer className="content-footer">
-      <nav aria-label="Legal navigation"><Link href="/terms">Terms</Link><Link href="/privacy">Privacy</Link><Link href="/responsible-gaming">Responsible gaming</Link><Link href="/cookies">Cookies</Link><Link href="/about">About</Link></nav>
-      <p>18+ only. Play responsibly and follow the laws that apply where you live.</p>
-    </footer>
-  </div>;
+      <p>{page.description}</p>
+    </section>
+    <section className="home-content-section">
+      <div className="home-section-heading"><h2><span/>Information</h2></div>
+      <div className="home-content-grid">{page.sections.map(section => <article className="home-content-card" key={section.heading}><h2>{section.heading}</h2><p>{section.body}</p></article>)}</div>
+    </section>
+    <div className="content-actions"><Link className="content-primary" href="/games">Browse games</Link><Link href="/contact">Contact support</Link></div>
+  </main></SiteShell>;
 }
