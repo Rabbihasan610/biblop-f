@@ -51,6 +51,12 @@ export function SiteShell({ children }: { children: ReactNode }) {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('auth') !== 'login') return;
+    const timer = window.setTimeout(() => setModal('login'), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     fetch('/api/public/settings', { headers: { Accept: 'application/json' } })
       .then(response => response.json())
       .then(payload => {
@@ -158,8 +164,8 @@ export function SiteShell({ children }: { children: ReactNode }) {
         <p className="eyebrow">Secure account</p>
         <h2 id="auth-title">{modal === 'login' ? 'Welcome back' : modal === 'register' ? 'Create your account' : 'Admin recovery request'}</h2>
         <form onSubmit={submit}>
-          {modal === 'register' && <><input name="firstname" placeholder="First name" required/><input name="lastname" placeholder="Last name" required/></>}
-          <input name={modal === 'forgot' ? 'value' : 'username'} placeholder={modal === 'forgot' ? 'Registered email or username' : 'Username or email'} required/>
+          {modal === 'register' && <><input name="firstname" autoComplete="given-name" placeholder="First name" required/><input name="lastname" autoComplete="family-name" placeholder="Last name" required/><input name="mobile" type="tel" inputMode="numeric" autoComplete="tel" pattern="01[0-9]{9}" placeholder="Phone number (01XXXXXXXXX)" required/><input name="email" type="email" autoComplete="email" placeholder="Email address" required/><input name="mobile_code" type="hidden" value="880"/><input name="country_code" type="hidden" value="BD"/><input name="country" type="hidden" value="Bangladesh"/><input name="agree" type="hidden" value="1"/></>}
+          {modal !== 'register' && <input name={modal === 'forgot' ? 'value' : 'username'} type={modal === 'login' ? 'tel' : 'text'} inputMode={modal === 'login' ? 'numeric' : undefined} autoComplete={modal === 'login' ? 'tel' : undefined} placeholder={modal === 'forgot' ? 'Registered email or phone number' : 'Phone number (01XXXXXXXXX)'} required/>}
           {modal !== 'forgot' && <input name="password" type="password" minLength={6} placeholder="Password" required/>}
           {modal === 'register' && <input name="password_confirmation" type="password" minLength={6} placeholder="Confirm password" required/>}
           {message && <p className="form-message" aria-live="polite">{message}</p>}

@@ -71,8 +71,11 @@ const packageJson = JSON.parse(
     fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'),
 );
 
-test('home renders the supplied standalone document shell', () =>
-    assert.match(page, /src="\/index\.html"/));
+test('home renders the supplied standalone document shell', () => {
+    assert.match(page, /'\/index\.html'/);
+    assert.match(page, /'\/index\.html\?auth=login'/);
+    assert.match(homepageIntegration, /openModal\?\.\('loginModal'\)/);
+});
 test('root document tolerates attributes injected before React hydration', () => {
     assert.match(rootLayout, /<html lang="en" suppressHydrationWarning>/);
     assert.match(rootLayout, /<body suppressHydrationWarning>/);
@@ -246,6 +249,34 @@ test('user account has separate API-first dashboard, payment, history and profil
     assert.match(userArea, /source-badge/);
     assert.match(userArea, /Search transaction or reference/);
     assert.match(userArea, /className="pagination"/);
+});
+
+test('login and registration modals submit phone-ready backend fields', () => {
+    assert.match(source, /name="username"[\s\S]*placeholder="Phone number \(01XXXXXXXXX\)"/);
+    for (const field of ['firstname', 'lastname', 'mobile', 'email', 'mobile_code', 'country_code', 'password', 'password_confirmation']) {
+        assert.match(source, new RegExp(`name="${field}"`));
+    }
+    assert.doesNotMatch(source, /onsubmit="[\s\S]{0,120}closeModal\('loginModal'\)/);
+    assert.match(siteShell, /name="mobile"/);
+    assert.match(siteShell, /name="mobile_code"/);
+    assert.match(catalogue, /games\?per_page=48/);
+    assert.match(catalogue, /last_page/);
+    assert.match(catalogue, /remainingPages/);
+    assert.doesNotMatch(catalogue, /games\?per_page=100/);
+});
+
+test('user dashboard routes require a valid server-side session', () => {
+    const proxy = fs.readFileSync(new URL('../proxy.ts', import.meta.url), 'utf8');
+    const userLayout = fs.readFileSync(new URL('../app/user/layout.tsx', import.meta.url), 'utf8');
+    assert.match(proxy, /jaba9_token/);
+    assert.match(proxy, /matcher: \['\/dashboard\/:path\*', '\/user\/:path\*'\]/);
+    assert.match(proxy, /NextResponse\.redirect/);
+    assert.match(userLayout, /api\/user\/dashboard/);
+    assert.match(userLayout, /Authorization: `Bearer \$\{token\}`/);
+    assert.match(userLayout, /authenticated = response\.ok/);
+    assert.match(userLayout, /if \(!authenticated\) redirect/);
+    assert.match(userArea, /response\.status === 401/);
+    assert.match(userArea, /window\.location\.replace\('\/\?auth=login'\)/);
 });
 
 test('catalogue routes provide search, filters, pagination, fallback data and game play', () => {

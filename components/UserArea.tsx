@@ -12,6 +12,10 @@ const money = (value: unknown) => `৳${Number(value || 0).toLocaleString('en-BD
 async function request(resource: string, options: RequestInit = {}) {
   const response = await fetch(`/api/user/${resource}`, { headers: { Accept: 'application/json', ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }) }, ...options });
   const payload = await response.json() as Json;
+  if (response.status === 401) {
+    window.location.replace('/?auth=login');
+    throw new Error('Your session has ended. Please sign in again.');
+  }
   if (!response.ok || payload.status !== 'success') throw new Error(String(payload.message || 'Account API unavailable.'));
   return (payload.data || {}) as Json;
 }

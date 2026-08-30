@@ -90,25 +90,33 @@ export function CatalogueExplorer({
 
   useEffect(() => {
     const controller = new AbortController();
-    const urls = [
-      '/api/public/games?per_page=100',
-      '/api/public/categories',
-      '/api/public/providers',
-    ];
-    Promise.all(urls.map(url => fetch(url, {
+    const get = (url: string) => fetch(url, {
       signal: controller.signal,
       headers: { Accept: 'application/json' },
     }).then(async response => {
       const payload = await response.json();
       if (!response.ok || payload.status !== 'success') throw new Error('API unavailable');
-      return payload.data;
-    }))).then(([gameData, categoryData, providerData]) => {
-      const apiGames = arrayFrom(gameData).map(gameOf);
-      const apiCategories = arrayFrom(categoryData).map(optionOf);
-      const apiProviders = arrayFrom(providerData).map(optionOf);
+      return payload as { data: unknown; meta?: { pagination?: { last_page?: number } } };
+    });
+    Promise.all([
+      get('/api/public/games?per_page=48'),
+      get('/api/public/categories'),
+      get('/api/public/providers'),
+    ]).then(async ([firstGames, categoryPayload, providerPayload]) => {
+      const lastPage = Math.max(1, Number(firstGames.meta?.pagination?.last_page || 1));
+      const remainingPages = await Promise.all(
+        Array.from({ length: lastPage - 1 }, (_, index) =>
+          get(`/api/public/games?per_page=48&page=${index + 2}`)),
+      );
+      const gameData = [firstGames, ...remainingPages].flatMap(payload => arrayFrom(payload.data));
+      const categoryData = arrayFrom(categoryPayload.data);
+      const providerData = arrayFrom(providerPayload.data);
+      const apiGames = gameData.map(gameOf);
+      const apiCategories = categoryData.map(optionOf);
+      const apiProviders = providerData.map(optionOf);
       if (apiGames.length) setGames(apiGames);
       if (apiCategories.length) setCategories(apiCategories);
-      const nestedProviders = arrayFrom(categoryData).flatMap(item => arrayFrom(item.providers)).map(optionOf);
+      const nestedProviders = categoryData.flatMap(item => arrayFrom(item.providers)).map(optionOf);
       if (apiProviders.length || nestedProviders.length) {
         setProviders(apiProviders.length
           ? apiProviders
@@ -174,7 +182,6 @@ export function CatalogueExplorer({
           onClick={() => recordGameClick(game.id)}
         >
           {/* A native image preserves the exact home-card sizing for dynamic API URLs. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={game.image_url || DEFAULT_GAME_IMAGE}
             alt={game.name}

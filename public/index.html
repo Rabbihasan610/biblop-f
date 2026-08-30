@@ -2378,20 +2378,18 @@
                 <p class="text-[13px] text-[var(--text-secondary)] mb-5">
                     Sign in to your Jaba9 account
                 </p>
-                <form
-                    onsubmit="
-                        event.preventDefault();
-                        closeModal('loginModal');
-                    "
-                >
+                <form>
                     <div class="space-y-3.5">
                         <input
-                            type="email"
-                            placeholder="Email address"
+                            type="tel"
+                            name="username"
+                            inputmode="numeric"
+                            autocomplete="tel"
+                            placeholder="Phone number (01XXXXXXXXX)"
                             class="input-gold"
                             required
                         />
-                        <input type="password" placeholder="Password" class="input-gold" required />
+                        <input type="password" name="password" autocomplete="current-password" placeholder="Password" class="input-gold" required />
                         <div class="flex items-center justify-between text-xs">
                             <label
                                 class="flex items-center gap-1.5 text-[var(--text-secondary)] cursor-pointer"
@@ -2439,28 +2437,36 @@
                 <p class="text-[13px] text-[var(--text-secondary)] mb-5">
                     Join Jaba9 and start playing
                 </p>
-                <form
-                    onsubmit="
-                        event.preventDefault();
-                        closeModal('registerModal');
-                    "
-                >
+                <form>
                     <div class="space-y-3.5">
-                        <input type="text" placeholder="Full name" class="input-gold" required />
+                        <input type="text" name="firstname" autocomplete="given-name" placeholder="First name" class="input-gold" required />
+                        <input type="text" name="lastname" autocomplete="family-name" placeholder="Last name" class="input-gold" required />
+                        <input type="tel" name="mobile" inputmode="numeric" autocomplete="tel" pattern="01[0-9]{9}" placeholder="Phone number (01XXXXXXXXX)" class="input-gold" required />
                         <input
                             type="email"
+                            name="email"
+                            autocomplete="email"
                             placeholder="Email address"
                             class="input-gold"
                             required
                         />
+                        <input type="hidden" name="mobile_code" value="880" />
+                        <input type="hidden" name="country_code" value="BD" />
+                        <input type="hidden" name="country" value="Bangladesh" />
                         <input
                             type="password"
-                            placeholder="Password (min 8 chars)"
+                            name="password"
+                            autocomplete="new-password"
+                            minlength="6"
+                            placeholder="Password (min 6 chars)"
                             class="input-gold"
                             required
                         />
                         <input
                             type="password"
+                            name="password_confirmation"
+                            autocomplete="new-password"
+                            minlength="6"
                             placeholder="Confirm password"
                             class="input-gold"
                             required
@@ -2468,7 +2474,7 @@
                         <label
                             class="flex items-center gap-2 text-xs text-[var(--text-secondary)] cursor-pointer"
                         >
-                            <input type="checkbox" class="accent-[#f5b81b]" required /> I agree to
+                            <input type="checkbox" name="agree" value="1" class="accent-[#f5b81b]" required /> I agree to
                             the <a href="#" class="text-[#f5b81b] hover:underline">Terms</a> &amp;
                             <a href="#" class="text-[#f5b81b] hover:underline">Privacy Policy</a>
                         </label>

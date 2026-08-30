@@ -255,6 +255,9 @@
         initializeAuthentication();
         initializePasswordToggles();
         initializePasswordRecovery();
+        if (new URLSearchParams(window.location.search).get('auth') === 'login') {
+            window.openModal?.('loginModal');
+        }
         document.querySelectorAll('.live-score-card').forEach((card) => {
             card.setAttribute('role', 'link');
             card.setAttribute('tabindex', '0');
