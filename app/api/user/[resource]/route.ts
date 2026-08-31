@@ -27,16 +27,29 @@ async function proxy(request: NextRequest, resource: string) {
   const token = (await cookies()).get('jaba9_token')?.value;
   if (!token) return NextResponse.json({ status: 'error', message: 'Your session has ended. Please sign in again.' }, { status: 401 });
   try {
-    const multipart = request.method !== 'GET' && request.headers.get('content-type')?.startsWith('multipart/form-data');
+    const contentType = request.headers.get('content-type') || '';
+    const multipart = request.method !== 'GET' && contentType.includes('multipart/form-data');
     const headers: Record<string, string> = { Accept: 'application/json', Authorization: `Bearer ${token}` };
-    if (!multipart) headers['Content-Type'] = 'application/json';
+    let body: BodyInit | undefined;
+    if (request.method !== 'GET') {
+      if (multipart) {
+        const formData = await request.formData();
+        body = formData;
+      } else {
+        const payload = await request.text();
+        if (payload) {
+          headers['Content-Type'] = 'application/json';
+          body = payload;
+        }
+      }
+    }
     const response = await upstreamFetch(`${backend}${route.path}${request.method === 'GET' ? request.nextUrl.search : ''}`, {
       method: request.method,
       headers,
-      body: request.method === 'GET' ? undefined : multipart ? await request.formData() : JSON.stringify(await request.json()),
+      body,
       cache: 'no-store',
     }, request.method === 'GET');
-    const payload = await response.json();
+    const payload = await response.json().catch(() => ({ status: 'error', message: 'The account service returned an invalid response.' }));
     return NextResponse.json(payload, { status: response.status });
   } catch {
     return NextResponse.json({ status: 'error', message: 'The account service is temporarily unavailable.' }, { status: 502 });

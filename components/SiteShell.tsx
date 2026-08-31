@@ -49,11 +49,19 @@ export function SiteShell({ children }: { children: ReactNode }) {
   const [modal, setModal] = useState<Modal>(null);
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get('auth') !== 'login') return;
     const timer = window.setTimeout(() => setModal('login'), 0);
     return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/user/profile', { headers: { Accept: 'application/json' } })
+      .then(response => setAuthenticated(response.ok))
+      .catch(() => setAuthenticated(false));
   }, []);
 
   useEffect(() => {
@@ -97,6 +105,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
         form.reset();
         setMessage('Recovery request sent to the administrator. You will receive the next instruction on your registered contact.');
       } else {
+        setAuthenticated(true);
         window.location.href = '/user/dashboard';
       }
     } catch (error) {
@@ -106,14 +115,27 @@ export function SiteShell({ children }: { children: ReactNode }) {
     }
   }
 
+  async function logout() {
+    setAccountOpen(false);
+    await fetch('/api/auth/logout', { method: 'POST' }).catch(() => undefined);
+    setAuthenticated(false);
+    window.location.href = '/';
+  }
+
   return <div className="app-shell">
     <header className="header-glass shared-site-header">
       <div className="header-top">
         <div className="header-top-inner">
           <div className="header-brand"><Brand siteName={siteName} logoUrl={logoUrl}/></div>
           <div className="header-actions">
-            <button type="button" className="header-auth-button" onClick={() => open('login')}>Login</button>
-            <button type="button" className="header-auth-button primary" onClick={() => open('register')}>Sign Up</button>
+            {authenticated ? <div className="account-menu">
+              <button type="button" className="account-icon-button" aria-label="Open account menu" aria-expanded={accountOpen} onClick={() => setAccountOpen(value => !value)}><Icon name="user"/></button>
+              {accountOpen && <div className="account-menu-panel">
+                <Link href="/user/dashboard" onClick={() => setAccountOpen(false)}><Icon name="home"/> Dashboard</Link>
+                <Link href="/user/profile" onClick={() => setAccountOpen(false)}><Icon name="user"/> Profile</Link>
+                <button type="button" onClick={() => void logout()}><Icon name="arrow"/> Logout</button>
+              </div>}
+            </div> : <><button type="button" className="header-auth-button" onClick={() => open('login')}>Login</button><button type="button" className="header-auth-button primary" onClick={() => open('register')}>Sign Up</button></>}
           </div>
         </div>
       </div>

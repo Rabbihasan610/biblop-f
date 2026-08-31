@@ -121,13 +121,29 @@
     /** Loads clickable categories and games from the public API. */
     async function loadCatalogue() {
         try {
-            const [home, categories] = await Promise.all([
-                requestJson('/api/public/home'),
-                requestJson('/api/public/categories'),
+            const [home, categories, liveGames] = await Promise.all([
+                requestJson('/api/public/home').catch(() => ({})),
+                requestJson('/api/public/categories').catch(() => []),
+                requestJson('/api/public/games?per_page=8').catch(() => ({ data: [] })),
             ]);
             const categoriesNode = select('#categoryScroll');
             const gamesNode = select('#gameGrid');
             const recentGamesNode = select('#recentGameGrid');
+            const publicGames = Array.isArray(liveGames)
+                ? liveGames
+                : Array.isArray(liveGames?.data)
+                    ? liveGames.data
+                    : Array.isArray(liveGames?.games)
+                        ? liveGames.games
+                        : [];
+            const recommendedGames = home.popular_games?.length
+                ? home.popular_games
+                : publicGames.length
+                    ? publicGames
+                    : [];
+            const recentGames = home.recent_clicked_games?.length
+                ? home.recent_clicked_games
+                : publicGames.slice(0, 8);
             if (categoriesNode)
                 categoriesNode.innerHTML = categories
                     .map(
@@ -136,12 +152,12 @@
                     )
                     .join('');
             if (gamesNode)
-                gamesNode.innerHTML = home.popular_games?.length
-                    ? home.popular_games.map(gameCard).join('')
+                gamesNode.innerHTML = recommendedGames.length
+                    ? recommendedGames.map(gameCard).join('')
                     : '<p class="col-span-full text-center py-8">No games are available.</p>';
             if (recentGamesNode)
-                recentGamesNode.innerHTML = home.recent_clicked_games?.length
-                    ? home.recent_clicked_games.map(gameCard).join('')
+                recentGamesNode.innerHTML = recentGames.length
+                    ? recentGames.map(gameCard).join('')
                     : '<p class="col-span-full text-center py-8">No recently clicked games yet.</p>';
             /** Records clicks and immediately refreshes the recent unique game list. */
             document.addEventListener('click', async (event) => {
@@ -154,14 +170,11 @@
                         body: JSON.stringify({ game_id: Number(card.dataset.game) }),
                     });
                     if (recentGamesNode) {
-                        const recentGames = [
+                        const recentGamesList = [
                             clickedGame,
-                            ...(home.recent_clicked_games || []).filter(
-                                (game) => game.id !== clickedGame.id,
-                            ),
+                            ...(recentGames || []).filter((game) => game.id !== clickedGame.id),
                         ].slice(0, 20);
-                        home.recent_clicked_games = recentGames;
-                        recentGamesNode.innerHTML = recentGames.map(gameCard).join('');
+                        recentGamesNode.innerHTML = recentGamesList.map(gameCard).join('');
                     }
                 } catch (error) {
                     console.error('Game click could not be recorded', error);

@@ -1,0 +1,352 @@
+{
+  "info": {
+    "_postman_id": "7590e8f2-68ab-4943-978a-69a32fde3dc8",
+    "name": "jaba9",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "57834974",
+    "_collection_link": "https://go.postman.co/collection/57834974-7590e8f2-68ab-4943-978a-69a32fde3dc8?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Authorization",
+      "item": [
+        {
+          "name": "register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "firstname",
+                  "value": "Test 30",
+                  "type": "text"
+                },
+                {
+                  "key": "lastname",
+                  "value": "T",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "test30@gmail.com",
+                  "type": "text"
+                },
+                {
+                  "key": "mobile_code",
+                  "value": "880",
+                  "type": "text"
+                },
+                {
+                  "key": "country_code",
+                  "value": "BD",
+                  "type": "text"
+                },
+                {
+                  "key": "mobile",
+                  "value": "01887094530",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "12345678",
+                  "type": "text"
+                },
+                {
+                  "key": "password_confirmation",
+                  "value": "12345678",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/register",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Games",
+      "item": [
+        {
+          "name": "Game Lists",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/games",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "games"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "gameplay",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "1|1O58Nxx8lYh0BgLqCDk6WL4ogmaMGCTmAmKofnAw13974205",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/v1/catalogue/games/7517/launch",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "v1",
+                "catalogue",
+                "games",
+                "7517",
+                "launch"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "https://jsgame.live/game/gamesUrl",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://jsgame.live/game/gamesUrl?id=e5a13e8e-3056-4454-b48e-ce6aa6793f32",
+              "protocol": "https",
+              "host": [
+                "jsgame",
+                "live"
+              ],
+              "path": [
+                "game",
+                "gamesUrl"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "e5a13e8e-3056-4454-b48e-ce6aa6793f32"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Deposit",
+      "item": [
+        {
+          "name": "Deposit Insert",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "1|1O58Nxx8lYh0BgLqCDk6WL4ogmaMGCTmAmKofnAw13974205",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"amount\": \"500.00\",\r\n  \"method_code\": 1001,\r\n  \"currency\": \"BDT\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/deposit/insert",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "deposit",
+                "insert"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deposit List",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/deposit/methods",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "deposit",
+                "methods"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Withdraw",
+      "item": [
+        {
+          "name": "Withdraw request",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "1|1O58Nxx8lYh0BgLqCDk6WL4ogmaMGCTmAmKofnAw13974205",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"method_id\": 3,\r\n  \"amount\": \"500.00\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/withdraw-request",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "withdraw-request"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "withdraw method",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "1|1O58Nxx8lYh0BgLqCDk6WL4ogmaMGCTmAmKofnAw13974205",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/withdraw-method",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "withdraw-method"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -407,6 +407,12 @@ button, a { -webkit-tap-highlight-color: transparent }
 .logo-text { color: var(--j-yellow); font-size: 1.5rem; font-weight: 950; line-height: 1; text-decoration: none; letter-spacing: -.05em }
 .site-logo-image { display: block; width: auto; height: 44px; max-width: 190px; object-fit: contain }
 .header-actions { display: flex; align-items: center; gap: 18px }
+.account-menu { position: relative }
+.account-icon-button { display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid rgba(245,196,0,.7); border-radius: 50%; background: var(--j-panel-2); color: var(--j-yellow); cursor: pointer }
+.account-icon-button:hover, .account-icon-button:focus-visible { background: var(--j-yellow); color: var(--j-black) }
+.account-menu-panel { position: absolute; top: calc(100% + 10px); right: 0; z-index: 220; display: grid; min-width: 175px; padding: 7px; border: 1px solid var(--j-line); background: var(--j-panel); box-shadow: 0 14px 32px rgba(0,0,0,.45) }
+.account-menu-panel a, .account-menu-panel button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 12px; border: 0; background: transparent; color: var(--j-white); font-size: 13px; text-align: left; text-decoration: none; cursor: pointer }
+.account-menu-panel a:hover, .account-menu-panel button:hover, .account-menu-panel a:focus-visible, .account-menu-panel button:focus-visible { background: var(--j-yellow); color: var(--j-black) }
 .header-auth-button { min-width: 120px; min-height: 38px; padding: 8px 20px; border: 0; background: var(--j-white); color: var(--j-black); font-size: 13px; font-weight: 700; line-height: 1; cursor: pointer }
 .header-auth-button.primary { background: var(--j-red); color: var(--j-white) }
 .header-auth-button:hover, .header-auth-button:focus-visible { background: var(--j-yellow); color: var(--j-black) }
@@ -482,7 +488,9 @@ button, a { -webkit-tap-highlight-color: transparent }
 .empty-state { grid-column: 1/-1; padding: 60px 20px; text-align: center; color: var(--j-muted) }.empty-state svg { color: var(--j-yellow); width: 42px; height: 42px }.empty-state h2 { color: var(--j-white) }
 
 .game-breadcrumb { display: flex; align-items: center; gap: 9px; margin-bottom: 18px; color: var(--j-muted); font-size: .8rem }.game-breadcrumb a { color: var(--j-yellow) }
-.play-stage { min-height: min(68vh,700px); border: 2px solid var(--j-yellow); background: #000 }.play-stage iframe { width: 100%; height: min(68vh,700px); border: 0 }
+.play-stage { min-height: min(68vh,700px); border: 2px solid var(--j-yellow); background: #000; overflow: hidden }.play-stage iframe { display: block; width: 100%; height: min(78vh,900px); min-height: 620px; border: 0; background: #000 }
+.play-stage:has(iframe) { min-height: min(78vh,900px) }
+@media (max-width: 700px) { .play-stage iframe { height: 78dvh; min-height: 520px } }
 .play-placeholder { min-height: min(68vh,700px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; background: radial-gradient(circle,#362f00,transparent 45%) }
 .play-placeholder>span { font-size: 5rem; color: var(--j-yellow); font-weight: 950 }.play-placeholder h1 { margin: 10px 0; font-size: clamp(2rem,5vw,4rem) }.play-placeholder p { color: var(--j-muted); max-width: 560px }
 .play-placeholder.demo-running>span { width: 84px; height: 84px; display: grid; place-items: center; background: var(--j-red); color: var(--j-white); animation: demo-pulse 1.4s ease-in-out infinite }

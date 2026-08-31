@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { upstreamFetch } from '@/lib/upstream-fetch';
 
@@ -8,6 +9,12 @@ const routes: Record<string, string> = {
     providers: '/api/v1/public/providers',
     categories: '/api/v1/public/categories',
     games: '/api/v1/public/games',
+};
+const fallbackRoutes: Record<string, string[]> = {
+    home: ['/api/home'],
+    providers: ['/api/providers'],
+    categories: ['/api/categories'],
+    games: ['/api/games'],
 };
 
 /**
@@ -48,17 +55,26 @@ export async function GET(
     { params }: { params: Promise<{ resource: string }> },
 ) {
     const { resource } = await params;
-    const path = routes[resource];
-    if (!path) return NextResponse.json({ status: 'error', message: 'Not found' }, { status: 404 });
+    const primaryPath = routes[resource];
+    if (!primaryPath) return NextResponse.json({ status: 'error', message: 'Not found' }, { status: 404 });
+    const candidates = [primaryPath, ...(fallbackRoutes[resource] ?? [])];
     try {
-        const upstream = await upstreamFetch(
-            `${backend}${path}${request.nextUrl.search}`,
-            { headers: { Accept: 'application/json' }, cache: 'no-store' },
-            true,
-        );
-        return NextResponse.json(sameOriginAssets(await upstream.json()), {
-            status: upstream.status,
-        });
+        let lastError: unknown;
+        for (const path of candidates) {
+            try {
+                const upstream = await upstreamFetch(
+                    `${backend}${path}${request.nextUrl.search}`,
+                    { headers: { Accept: 'application/json' }, cache: 'no-store' },
+                    true,
+                );
+                return NextResponse.json(sameOriginAssets(await upstream.json()), {
+                    status: upstream.status,
+                });
+            } catch (error) {
+                lastError = error;
+            }
+        }
+        throw lastError instanceof Error ? lastError : new Error('Catalogue API unavailable');
     } catch {
         return NextResponse.json(
             { status: 'error', message: 'The catalogue service is temporarily unavailable.' },
@@ -78,8 +94,8 @@ export async function POST(
     }
 
     try {
-        const payload = (await request.json()) as { game_id?: unknown };
-        const gameId = Number(payload.game_id);
+        const payload = (await request.json().catch(() => ({}))) as { game_id?: unknown; id?: unknown };
+        const gameId = Number(payload.game_id ?? payload.id);
         if (!Number.isSafeInteger(gameId) || gameId < 1) {
             return NextResponse.json(
                 { status: 'error', message: 'A valid game is required.' },
@@ -87,17 +103,24 @@ export async function POST(
             );
         }
 
+        const token = (await cookies()).get('jaba9_token')?.value
+            ?? request.headers.get('authorization')?.replace(/^Bearer\s+/i, '').trim();
         const upstream = await upstreamFetch(
-            `${backend}/api/v1/public/games/${gameId}/click`,
+            `${backend}/api/v1/catalogue/games/${gameId}/launch`,
             {
                 method: 'POST',
-                headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-                body: '{}',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({ game_id: gameId }),
                 cache: 'no-store',
             },
             false,
         );
-        return NextResponse.json(await upstream.json(), { status: upstream.status });
+        const responsePayload = await upstream.json().catch(() => ({ status: 'error', message: 'Upstream returned no content.' }));
+        return NextResponse.json(sameOriginAssets(responsePayload), { status: upstream.status });
     } catch {
         return NextResponse.json(
             { status: 'error', message: 'The catalogue service is temporarily unavailable.' },

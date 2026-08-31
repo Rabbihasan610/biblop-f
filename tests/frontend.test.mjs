@@ -197,6 +197,7 @@ test('public catalogue and auth recovery use same-origin BFF routes', () => {
     const integration = fs.readFileSync(new URL('../public/app.js', import.meta.url), 'utf8');
     assert.match(integration, /\/api\/public\/home/);
     assert.match(publicProxy, /games: '\/api\/v1\/public\/games'/);
+    assert.match(publicProxy, /catalogue\/games\//);
     assert.match(integration, /\/api\/public\/categories/);
     assert.match(integration, /\/api\/public\/click/);
     assert.match(integration, /\/api\/public\/settings/);
@@ -261,7 +262,10 @@ test('login and registration modals submit phone-ready backend fields', () => {
     assert.match(siteShell, /name="mobile_code"/);
     assert.match(catalogue, /games\?per_page=48/);
     assert.match(catalogue, /last_page/);
-    assert.match(catalogue, /remainingPages/);
+    assert.match(catalogue, /page: String\(page\)/);
+    assert.match(catalogue, /setPage\(1\)/);
+    assert.match(catalogue, /normalizeCollection|normalizeGameList|nested\.data|nested\.games/);
+    assert.doesNotMatch(catalogue, /remainingPages/);
     assert.doesNotMatch(catalogue, /games\?per_page=100/);
 });
 
@@ -294,6 +298,7 @@ test('catalogue routes provide search, filters, pagination, fallback data and ga
     assert.match(globalStyles, /@media\(max-width:639px\)[\s\S]*repeat\(2/);
     assert.match(gamePlayer, /<iframe/);
     assert.match(gamePlayer, /Fallback preview/);
+    assert.match(gamePlayer, /iframe_url|iframe\.src|launch_url/);
     assert.match(siteShell, /\/api\/public\/settings/);
     assert.match(siteShell, /Admin recovery request/);
     assert.match(siteShell, /\/api\/auth\/password\/email/);

@@ -5,8 +5,25 @@ const backend = (process.env.API_BASE_URL ?? 'http://127.0.0.1:8000').replace(/\
 
 export async function POST(request: NextRequest) {
   try {
+    const contentType = request.headers.get('content-type') || '';
+    const payloadBody = contentType.includes('application/json')
+      ? await request.json().catch(() => ({}))
+      : Object.fromEntries((await request.formData()).entries());
+
     const response = await upstreamFetch(`${backend}/api/login`, {
-      method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(await request.json()), cache: 'no-store',
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        ...(contentType.includes('multipart/form-data') ? {} : { 'Content-Type': 'application/json' }),
+      },
+      body: contentType.includes('multipart/form-data') ? (() => {
+        const form = new FormData();
+        Object.entries(payloadBody as Record<string, unknown>).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) form.append(key, String(value));
+        });
+        return form;
+      })() : JSON.stringify(payloadBody),
+      cache: 'no-store',
     });
     const payload = await response.json();
     const outgoing = NextResponse.json(payload, { status: response.status });

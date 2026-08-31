@@ -13,17 +13,25 @@ import { Icon } from './Icons';
 
 type Json = Record<string, unknown>;
 const PAGE_SIZE = 12;
+const DEFAULT_CATALOGUE_REQUEST = '/api/public/games?per_page=48';
 const DEFAULT_GAME_IMAGE = '/assets/images/games/default-small.svg';
 
-function arrayFrom(value: unknown): Json[] {
+function normalizeCollection(value: unknown): Json[] {
   if (Array.isArray(value)) return value as Json[];
-  if (value && typeof value === 'object') {
-    const object = value as Json;
-    if (Array.isArray(object.data)) return object.data as Json[];
-    for (const key of ['games', 'providers', 'categories']) {
-      if (Array.isArray(object[key])) return object[key] as Json[];
+  if (!value || typeof value !== 'object') return [];
+
+  const object = value as Json;
+  for (const key of ['data', 'games', 'providers', 'categories', 'items']) {
+    const candidate = object[key];
+    if (Array.isArray(candidate)) return candidate as Json[];
+    if (candidate && typeof candidate === 'object') {
+      const nested = candidate as Json;
+      if (Array.isArray(nested.data)) return nested.data as Json[];
+      if (Array.isArray(nested.items)) return nested.items as Json[];
+      if (Array.isArray(nested.games)) return nested.games as Json[];
     }
   }
+
   return [];
 }
 
@@ -54,15 +62,6 @@ function gameOf(item: Json, index: number): Game {
   };
 }
 
-function recordGameClick(gameId: number) {
-  void fetch('/api/public/click', {
-    method: 'POST',
-    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    body: JSON.stringify({ game_id: gameId }),
-    keepalive: true,
-  }).catch(() => undefined);
-}
-
 export function CatalogueExplorer({
   title = 'All Games',
   description = 'Search every enabled game, category and provider.',
@@ -85,6 +84,7 @@ export function CatalogueExplorer({
   const [category, setCategory] = useState(initialCategory);
   const [provider, setProvider] = useState(initialProvider);
   const [page, setPage] = useState(1);
+  const [pageCount, setPageCount] = useState(1);
   const [source, setSource] = useState<'api' | 'fallback'>('fallback');
   const [loading, setLoading] = useState(true);
 
@@ -96,52 +96,65 @@ export function CatalogueExplorer({
     }).then(async response => {
       const payload = await response.json();
       if (!response.ok || payload.status !== 'success') throw new Error('API unavailable');
-      return payload as { data: unknown; meta?: { pagination?: { last_page?: number } } };
+      return payload as { data: unknown; meta?: { pagination?: { last_page?: number; total?: number } } };
     });
+
     Promise.all([
-      get('/api/public/games?per_page=48'),
       get('/api/public/categories'),
       get('/api/public/providers'),
-    ]).then(async ([firstGames, categoryPayload, providerPayload]) => {
-      const lastPage = Math.max(1, Number(firstGames.meta?.pagination?.last_page || 1));
-      const remainingPages = await Promise.all(
-        Array.from({ length: lastPage - 1 }, (_, index) =>
-          get(`/api/public/games?per_page=48&page=${index + 2}`)),
-      );
-      const gameData = [firstGames, ...remainingPages].flatMap(payload => arrayFrom(payload.data));
-      const categoryData = arrayFrom(categoryPayload.data);
-      const providerData = arrayFrom(providerPayload.data);
-      const apiGames = gameData.map(gameOf);
+    ]).then(([categoryPayload, providerPayload]) => {
+      const categoryData = normalizeCollection(categoryPayload.data);
+      const providerData = normalizeCollection(providerPayload.data);
       const apiCategories = categoryData.map(optionOf);
       const apiProviders = providerData.map(optionOf);
-      if (apiGames.length) setGames(apiGames);
       if (apiCategories.length) setCategories(apiCategories);
-      const nestedProviders = categoryData.flatMap(item => arrayFrom(item.providers)).map(optionOf);
+      const nestedProviders = categoryData.flatMap(item => normalizeCollection((item.providers as Json) ?? [])).map(optionOf);
       if (apiProviders.length || nestedProviders.length) {
         setProviders(apiProviders.length
           ? apiProviders
           : nestedProviders.filter((item, index, all) => all.findIndex(candidate => candidate.slug === item.slug) === index));
       }
-      if (apiGames.length || apiCategories.length) setSource('api');
-    }).catch(() => setSource('fallback')).finally(() => setLoading(false));
+    }).catch(() => undefined);
+
+    const query = new URLSearchParams({ page: String(page) });
+    if (search.trim()) query.set('search', search.trim());
+    if (category) query.set('category', category);
+    if (provider) query.set('provider', provider);
+
+    const requestUrl = `${DEFAULT_CATALOGUE_REQUEST}&${query.toString()}`;
+
+    get(requestUrl)
+      .then((payload) => {
+        const apiGames = normalizeCollection(payload.data).map(gameOf);
+        setGames(apiGames);
+        setPageCount(Math.max(1, Number(payload.meta?.pagination?.last_page || 1)));
+        setSource(apiGames.length ? 'api' : 'fallback');
+      })
+      .catch(() => {
+        setGames(fallbackGames);
+        setPageCount(1);
+        setSource('fallback');
+      })
+      .finally(() => setLoading(false));
+
     return () => controller.abort();
-  }, []);
+  }, [page, search, category, provider]);
 
-  const filtered = useMemo(() => games.filter(game => {
-    const term = search.trim().toLowerCase();
-    return (!term || `${game.name} ${game.provider} ${game.category}`.toLowerCase().includes(term))
-      && (!category || game.category_slug === category)
-      && (!provider || game.provider_slug === provider);
-  }), [games, search, category, provider]);
+  const filtered = useMemo(() => games, [games]);
 
-  const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const pages = Math.max(1, pageCount);
   const currentPage = Math.min(page, pages);
-  const visible = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const visible = filtered;
   const directoryItems = directory === 'categories' ? categories : providers;
 
   function change(setter: (value: string) => void, value: string) {
     setter(value);
     setPage(1);
+  }
+
+  function goToPage(nextPage: number) {
+    if (nextPage < 1 || nextPage > pages) return;
+    setPage(nextPage);
   }
 
   return <main className="page-main catalogue-page page-enter">
@@ -179,7 +192,6 @@ export function CatalogueExplorer({
           href={`/game/${game.slug}?id=${game.id}`}
           key={game.id}
           title={`${game.name} · ${game.provider}`}
-          onClick={() => recordGameClick(game.id)}
         >
           {/* A native image preserves the exact home-card sizing for dynamic API URLs. */}
           <img
@@ -196,11 +208,11 @@ export function CatalogueExplorer({
       </div>
 
       <nav className="pagination" aria-label="Catalogue pages">
-        <button disabled={page <= 1} onClick={() => setPage(value => value - 1)}>Previous</button>
+        <button disabled={currentPage <= 1} onClick={() => goToPage(currentPage - 1)}>Previous</button>
         {Array.from({ length: pages }, (_, index) => index + 1)
-          .slice(Math.max(0, page - 3), Math.max(5, page + 2))
-          .map(value => <button className={value === page ? 'active' : ''} key={value} onClick={() => setPage(value)} aria-current={value === page ? 'page' : undefined}>{value}</button>)}
-        <button disabled={page >= pages} onClick={() => setPage(value => value + 1)}>Next</button>
+          .slice(Math.max(0, currentPage - 3), Math.max(5, currentPage + 2))
+          .map(value => <button className={value === currentPage ? 'active' : ''} key={value} onClick={() => goToPage(value)} aria-current={value === currentPage ? 'page' : undefined}>{value}</button>)}
+        <button disabled={currentPage >= pages} onClick={() => goToPage(currentPage + 1)}>Next</button>
       </nav>
     </section>
   </main>;
